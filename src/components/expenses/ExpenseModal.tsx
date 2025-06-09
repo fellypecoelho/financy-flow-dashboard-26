@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { Despesa, Categoria, Cartao, Investidor, TipoDespesa, FormaPagamento, FrequenciaRecorrente } from '@/types';
+import { Despesa, Categoria, Cartao, Investidor, TipoDespesa, FormaPagamento, FrequenciaRecorrente, StatusDespesa } from '@/types';
 
 interface ExpenseModalProps {
   expense: Despesa | null;
@@ -21,7 +20,7 @@ const ExpenseModal = ({ expense, categorias, cartoes, investidores, onSave, onCl
     dataCompra: '',
     dataVencimento: '',
     formaPagamento: 'dinheiro' as FormaPagamento,
-    status: 'pendente' as const,
+    status: 'pendente' as StatusDespesa,
     tipo: 'unica' as TipoDespesa,
     cartaoId: '',
     frequencia: 'mensal' as FrequenciaRecorrente,
@@ -177,6 +176,18 @@ const ExpenseModal = ({ expense, categorias, cartoes, investidores, onSave, onCl
                 <option value="dinheiro">Dinheiro</option>
                 <option value="transferencia">Transferência</option>
                 <option value="cartao">Cartão</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value as StatusDespesa})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="pendente">Pendente</option>
+                <option value="pago">Pago</option>
               </select>
             </div>
 
