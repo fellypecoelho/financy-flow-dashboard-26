@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import Dashboard from '@/components/Dashboard';
+import ExpenseManagement from '@/components/ExpenseManagement';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -11,12 +12,7 @@ const Index = () => {
       case 'dashboard':
         return <Dashboard />;
       case 'despesas':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Gerenciamento de Despesas</h2>
-            <p className="text-gray-500">Em desenvolvimento...</p>
-          </div>
-        );
+        return <ExpenseManagement />;
       case 'aportes':
         return (
           <div className="text-center py-12">
