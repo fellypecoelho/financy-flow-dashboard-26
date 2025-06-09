@@ -2,8 +2,6 @@
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import Dashboard from '@/components/Dashboard';
-import TransactionForm from '@/components/TransactionForm';
-import TransactionList from '@/components/TransactionList';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -12,22 +10,46 @@ const Index = () => {
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard />;
-      case 'transactions':
-        return <TransactionForm />;
-      case 'reports':
-        return <TransactionList />;
-      case 'profile':
+      case 'despesas':
         return (
           <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Perfil do Usuário</h2>
-            <p className="text-gray-500">Configurações de perfil em desenvolvimento.</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Gerenciamento de Despesas</h2>
+            <p className="text-gray-500">Em desenvolvimento...</p>
           </div>
         );
-      case 'settings':
+      case 'aportes':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Gerenciamento de Aportes</h2>
+            <p className="text-gray-500">Em desenvolvimento...</p>
+          </div>
+        );
+      case 'cartoes':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Gerenciamento de Cartões</h2>
+            <p className="text-gray-500">Em desenvolvimento...</p>
+          </div>
+        );
+      case 'calendario':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Calendário Financeiro</h2>
+            <p className="text-gray-500">Em desenvolvimento...</p>
+          </div>
+        );
+      case 'relatorios':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Relatórios</h2>
+            <p className="text-gray-500">Em desenvolvimento...</p>
+          </div>
+        );
+      case 'configuracoes':
         return (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Configurações</h2>
-            <p className="text-gray-500">Configurações do sistema em desenvolvimento.</p>
+            <p className="text-gray-500">Em desenvolvimento...</p>
           </div>
         );
       default:
