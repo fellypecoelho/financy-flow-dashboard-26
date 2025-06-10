@@ -26,7 +26,7 @@ const mockCartoes: Cartao[] = [
 export const useFinancialData = () => {
   const [investidores] = useState<Investidor[]>(mockInvestidores);
   const [categorias] = useState<Categoria[]>(mockCategorias);
-  const [cartoes] = useState<Cartao[]>(mockCartoes);
+  const [cartoes, setCartoes] = useState<Cartao[]>(mockCartoes);
   const [despesas, setDespesas] = useState<Despesa[]>([]);
   const [aportes, setAportes] = useState<Aporte[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -112,6 +112,7 @@ export const useFinancialData = () => {
     aportes,
     dashboardData,
     setDespesas,
-    setAportes
+    setAportes,
+    setCartoes
   };
 };
