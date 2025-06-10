@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import Dashboard from '@/components/Dashboard';
 import ExpenseManagement from '@/components/ExpenseManagement';
+import AporteManagement from '@/components/AporteManagement';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -14,12 +15,7 @@ const Index = () => {
       case 'despesas':
         return <ExpenseManagement />;
       case 'aportes':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Gerenciamento de Aportes</h2>
-            <p className="text-gray-500">Em desenvolvimento...</p>
-          </div>
-        );
+        return <AporteManagement />;
       case 'cartoes':
         return (
           <div className="text-center py-12">
