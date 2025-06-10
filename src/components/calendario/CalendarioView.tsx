@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, dateFns, DayPicker } from 'react-day-picker';
+import { DayPicker } from 'react-day-picker';
 import { EventoCalendario } from '@/types/calendario';
 import { format, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
