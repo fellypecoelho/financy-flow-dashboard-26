@@ -1,4 +1,3 @@
-
 export interface Investidor {
   id: string;
   nome: string;
@@ -73,4 +72,15 @@ export interface DashboardData {
   };
   saldosInvestidores: { investidorId: string; saldo: number }[];
   proximosVencimentos: Despesa[];
+}
+
+export interface EventoCalendario {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  data: string;
+  valor: number;
+  tipo: 'despesa' | 'aporte';
+  status: 'pendente' | 'pago' | 'confirmado';
+  investidor?: string;
 }
