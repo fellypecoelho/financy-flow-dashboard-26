@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { DayPicker } from 'react-day-picker';
 import { EventoCalendario } from '@/types/calendario';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface CalendarioViewProps {
   eventos: EventoCalendario[];
@@ -17,95 +16,124 @@ const CalendarioView = ({ eventos, selectedDate, onDateSelect }: CalendarioViewP
     return eventos.filter(evento => isSameDay(new Date(evento.data), date));
   };
 
-  const modifiers = {
-    comEventos: (date: Date) => getEventosNaData(date).length > 0,
-    despesaPendente: (date: Date) => 
-      getEventosNaData(date).some(e => e.tipo === 'despesa' && e.status === 'pendente'),
-    despesaPaga: (date: Date) => 
-      getEventosNaData(date).some(e => e.tipo === 'despesa' && e.status === 'pago'),
-    aporte: (date: Date) => 
-      getEventosNaData(date).some(e => e.tipo === 'aporte'),
-    multiplosEventos: (date: Date) => getEventosNaData(date).length > 1,
-  };
+  const today = new Date();
+  const monthStart = startOfMonth(selectedDate);
+  const monthEnd = endOfMonth(selectedDate);
+  const startDate = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
-  const modifiersStyles = {
-    despesaPendente: {
-      backgroundColor: '#fef2f2',
-      color: '#dc2626',
-      fontWeight: 'bold',
-      border: '2px solid #fca5a5',
-    },
-    despesaPaga: {
-      backgroundColor: '#eff6ff',
-      color: '#2563eb',
-      fontWeight: 'bold',
-      border: '2px solid #93c5fd',
-    },
-    aporte: {
-      backgroundColor: '#f0fdf4',
-      color: '#16a34a',
-      fontWeight: 'bold',
-      border: '2px solid #86efac',
-    },
-    multiplosEventos: {
-      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)',
-    },
+  const days = [];
+  let day = startDate;
+
+  while (day <= endDate) {
+    days.push(day);
+    day = addDays(day, 1);
+  }
+
+  const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  const renderDay = (day: Date) => {
+    const eventosNoDia = getEventosNaData(day);
+    const isToday = isSameDay(day, today);
+    const isSelected = isSameDay(day, selectedDate);
+    const isCurrentMonth = isSameMonth(day, selectedDate);
+    const dayNumber = format(day, 'd');
+
+    const hasAporte = eventosNoDia.some(e => e.tipo === 'aporte');
+    const hasDespesaPendente = eventosNoDia.some(e => e.tipo === 'despesa' && e.status === 'pendente');
+    const hasDespesaPaga = eventosNoDia.some(e => e.tipo === 'despesa' && e.status === 'pago');
+
+    return (
+      <div
+        key={day.toString()}
+        className={`
+          min-h-[80px] p-2 border border-border cursor-pointer transition-all hover:bg-accent/50
+          ${isSelected ? 'bg-primary/10 border-primary' : ''}
+          ${isToday ? 'bg-accent' : ''}
+          ${!isCurrentMonth ? 'text-muted-foreground bg-muted/30' : ''}
+        `}
+        onClick={() => onDateSelect(day)}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-start mb-1">
+            <span className={`text-sm font-medium ${isToday ? 'font-bold text-primary' : ''}`}>
+              {dayNumber}
+            </span>
+            {eventosNoDia.length > 0 && (
+              <div className="flex gap-1">
+                {hasAporte && (
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                )}
+                {hasDespesaPaga && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                )}
+                {hasDespesaPendente && (
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <div className="flex-1 space-y-1">
+            {eventosNoDia.slice(0, 2).map((evento, index) => (
+              <div
+                key={index}
+                className={`text-xs p-1 rounded truncate ${
+                  evento.tipo === 'aporte' 
+                    ? 'bg-green-100 text-green-700'
+                    : evento.status === 'pago'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-red-100 text-red-700'
+                }`}
+              >
+                {evento.titulo}
+              </div>
+            ))}
+            
+            {eventosNoDia.length > 2 && (
+              <div className="text-xs text-muted-foreground font-medium">
+                +{eventosNoDia.length - 2} mais
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex justify-center">
-        <DayPicker
-          mode="single"
-          selected={selectedDate}
-          onSelect={(date) => date && onDateSelect(date)}
-          locale={ptBR}
-          modifiers={modifiers}
-          modifiersStyles={modifiersStyles}
-          className="border rounded-lg p-4 bg-white shadow-sm"
-          showOutsideDays
-          classNames={{
-            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-            month: "space-y-4",
-            caption: "flex justify-center pt-1 relative items-center mb-4",
-            caption_label: "text-lg font-semibold text-gray-900",
-            nav: "space-x-1 flex items-center",
-            nav_button: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 border border-gray-300 rounded-md hover:bg-gray-100",
-            nav_button_previous: "absolute left-1",
-            nav_button_next: "absolute right-1",
-            table: "w-full border-collapse space-y-1",
-            head_row: "flex",
-            head_cell: "text-gray-500 rounded-md w-10 font-medium text-sm uppercase",
-            row: "flex w-full mt-2",
-            cell: "h-10 w-10 text-center text-sm p-0 relative hover:bg-gray-100 rounded-md transition-colors",
-            day: "h-10 w-10 p-0 font-normal rounded-md hover:bg-gray-100 transition-colors cursor-pointer",
-            day_selected: "bg-blue-600 text-white hover:bg-blue-700 font-semibold",
-            day_today: "bg-blue-100 text-blue-900 font-semibold",
-            day_outside: "text-gray-400 opacity-50",
-            day_disabled: "text-gray-400 opacity-50 cursor-not-allowed",
-          }}
-        />
+    <div className="w-full">
+      {/* Grid do calendário */}
+      <div className="grid grid-cols-7 gap-0 border border-border rounded-lg overflow-hidden bg-card">
+        {/* Cabeçalho dos dias da semana */}
+        {weekDays.map((day) => (
+          <div
+            key={day}
+            className="bg-muted p-3 text-center text-sm font-medium text-muted-foreground border-b border-border"
+          >
+            {day}
+          </div>
+        ))}
+        
+        {/* Dias do mês */}
+        {days.map(renderDay)}
       </div>
       
-      {/* Legenda melhorada */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h4 className="font-medium text-gray-900 mb-3">Legenda</h4>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+      {/* Legenda */}
+      <div className="mt-6 bg-muted/30 p-4 rounded-lg">
+        <h4 className="font-medium text-card-foreground mb-3">Legenda</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-100 border-2 border-red-300 rounded"></div>
-            <span className="text-gray-700">Despesa Pendente</span>
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <span className="text-muted-foreground">Despesa Pendente</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-100 border-2 border-blue-300 rounded"></div>
-            <span className="text-gray-700">Despesa Paga</span>
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <span className="text-muted-foreground">Despesa Paga</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-100 border-2 border-green-300 rounded"></div>
-            <span className="text-gray-700">Aporte</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-600 rounded shadow-md"></div>
-            <span className="text-gray-700">Múltiplos Eventos</span>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-muted-foreground">Aporte</span>
           </div>
         </div>
       </div>
