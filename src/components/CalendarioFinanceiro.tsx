@@ -42,7 +42,7 @@ const CalendarioFinanceiro = () => {
   const fimMes = endOfMonth(selectedDate);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
