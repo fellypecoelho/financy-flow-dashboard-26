@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -78,71 +77,75 @@ const RelatorioCategorias = ({ periodo, despesas }: RelatorioCategoriasProps) =>
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de Pizza - Distribuição por Categoria */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Distribuição por Categoria</CardTitle>
             <CardDescription>
               Percentual de gastos por categoria
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={dadosPizza}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percentage }) => `${name}: ${percentage}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {dadosPizza.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="p-4">
+            <div className="w-full h-[300px]">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <Pie
+                      data={dadosPizza}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percentage }) => `${name}: ${percentage}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {dadosPizza.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
 
         {/* Gráfico de Barras - Top Categorias */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Categorias com Maior Gasto</CardTitle>
             <CardDescription>
               Top 10 categorias por valor total
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dadosBarras} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="nome" type="category" width={80} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="valor" fill="var(--color-valor)" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="p-4">
+            <div className="w-full h-[300px]">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dadosBarras} layout="horizontal" margin={{ top: 20, right: 20, bottom: 20, left: 80 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis dataKey="nome" type="category" width={80} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="valor" fill="var(--color-valor)" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabela Detalhada */}
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Detalhamento por Categoria</CardTitle>
           <CardDescription>
             Análise completa de gastos por categoria
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <Table>
             <TableHeader>
               <TableRow>

@@ -96,106 +96,112 @@ const RelatorioGeral = ({ periodo, despesas, aportes }: RelatorioGeralProps) => 
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de Barras - Comparativo */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Comparativo Mensal</CardTitle>
             <CardDescription>
               Aportes vs Despesas no período
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dadosComparativos}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="nome" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar 
-                    dataKey="valor" 
-                    fill="var(--color-aportes)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="p-4">
+            <div className="w-full h-[300px]">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dadosComparativos} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="nome" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar 
+                      dataKey="valor" 
+                      fill="var(--color-aportes)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
 
         {/* Gráfico de Pizza - Status das Despesas */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Status das Despesas</CardTitle>
             <CardDescription>
               Distribuição por status de pagamento
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={statusDespesas}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {statusDespesas.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="p-4">
+            <div className="w-full h-[300px]">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <Pie
+                      data={statusDespesas}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {statusDespesas.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Gráfico de Linha - Evolução Diária */}
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Evolução Diária</CardTitle>
           <CardDescription>
             Movimentação financeira ao longo do mês
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig} className="min-h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={evolucaoDiaria}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="dia" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="aportes" 
-                  stroke="var(--color-aportes)" 
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="despesas" 
-                  stroke="var(--color-despesas)" 
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="saldo" 
-                  stroke="var(--color-saldo)" 
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+        <CardContent className="p-4">
+          <div className="w-full h-[400px]">
+            <ChartContainer config={chartConfig} className="w-full h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={evolucaoDiaria} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="dia" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="aportes" 
+                    stroke="var(--color-aportes)" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="despesas" 
+                    stroke="var(--color-despesas)" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="saldo" 
+                    stroke="var(--color-saldo)" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         </CardContent>
       </Card>
     </div>

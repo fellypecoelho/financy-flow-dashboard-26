@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -147,82 +146,86 @@ const RelatorioFluxoCaixa = ({ periodo, despesas, aportes }: RelatorioFluxoCaixa
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de Área - Fluxo Diário */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Fluxo Diário</CardTitle>
             <CardDescription>
               Entradas, saídas e saldo acumulado por dia
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={fluxoDiario}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="dia" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area 
-                    type="monotone" 
-                    dataKey="entradas" 
-                    stackId="1"
-                    stroke="var(--color-entradas)" 
-                    fill="var(--color-entradas)"
-                    fillOpacity={0.6}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="saidas" 
-                    stackId="2"
-                    stroke="var(--color-saidas)" 
-                    fill="var(--color-saidas)"
-                    fillOpacity={0.6}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="p-4">
+            <div className="w-full h-[300px]">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={fluxoDiario} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="dia" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="entradas" 
+                      stackId="1"
+                      stroke="var(--color-entradas)" 
+                      fill="var(--color-entradas)"
+                      fillOpacity={0.6}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="saidas" 
+                      stackId="2"
+                      stroke="var(--color-saidas)" 
+                      fill="var(--color-saidas)"
+                      fillOpacity={0.6}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
 
         {/* Gráfico de Linha - Saldo Acumulado */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Saldo Acumulado</CardTitle>
             <CardDescription>
               Evolução do saldo ao longo do mês
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={fluxoDiario}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="dia" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="saldoAcumulado" 
-                    stroke="var(--color-saldoAcumulado)" 
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <CardContent className="p-4">
+            <div className="w-full h-[300px]">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={fluxoDiario} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="dia" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="saldoAcumulado" 
+                      stroke="var(--color-saldoAcumulado)" 
+                      strokeWidth={3}
+                      dot={{ r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Comparação Mensal */}
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Comparação Últimos 6 Meses</CardTitle>
           <CardDescription>
             Histórico de fluxo de caixa mensal
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <Table>
             <TableHeader>
               <TableRow>
