@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import RelatorioGeral from '@/components/relatorios/RelatorioGeral';
 import RelatorioInvestidores from '@/components/relatorios/RelatorioInvestidores';
 import RelatorioFluxoCaixa from '@/components/relatorios/RelatorioFluxoCaixa';
@@ -12,7 +12,7 @@ import RelatorioCategorias from '@/components/relatorios/RelatorioCategorias';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { format, startOfMonth, endOfMonth, subMonths, addDays, isAfter, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart3, Download, Filter, TrendingUp, Clock, DollarSign, Target } from 'lucide-react';
+import { BarChart3, Download, Filter, TrendingUp, Clock, DollarSign, Target, Calendar, AlertTriangle } from 'lucide-react';
 
 const RelatoriosFinanceiros = () => {
   const [periodoSelecionado, setPeriodoSelecionado] = useState<Date>(new Date());
@@ -41,15 +41,70 @@ const RelatoriosFinanceiros = () => {
 
   const saldoMes = totalAportesMes - totalDespesasMes;
 
-  // Cálculo de próximos vencimentos (próximos 7 dias)
+  // Simulação de próximos vencimentos com mais detalhes
   const hoje = new Date();
   const proximosSeteDias = addDays(hoje, 7);
-  const proximosVencimentos = despesas.filter(d => {
-    const dataVencimento = new Date(d.dataVencimento);
-    return d.status === 'pendente' && 
-           isAfter(dataVencimento, hoje) && 
-           isBefore(dataVencimento, proximosSeteDias);
-  }).length;
+  
+  const proximosVencimentosDetalhados = [
+    {
+      id: '1',
+      descricao: 'Aluguel',
+      valor: 2200.00,
+      dataVencimento: format(addDays(hoje, 2), 'yyyy-MM-dd'),
+      categoria: 'Moradia',
+      status: 'pendente',
+      prioridade: 'alta'
+    },
+    {
+      id: '2',
+      descricao: 'Conta de Luz',
+      valor: 280.50,
+      dataVencimento: format(addDays(hoje, 4), 'yyyy-MM-dd'),
+      categoria: 'Moradia',
+      status: 'pendente',
+      prioridade: 'media'
+    },
+    {
+      id: '3',
+      descricao: 'Internet',
+      valor: 89.90,
+      dataVencimento: format(addDays(hoje, 6), 'yyyy-MM-dd'),
+      categoria: 'Moradia',
+      status: 'pendente',
+      prioridade: 'baixa'
+    },
+    {
+      id: '4',
+      descricao: 'Supermercado',
+      valor: 450.30,
+      dataVencimento: format(addDays(hoje, 1), 'yyyy-MM-dd'),
+      categoria: 'Alimentação',
+      status: 'pendente',
+      prioridade: 'alta'
+    }
+  ];
+
+  const proximosVencimentos = proximosVencimentosDetalhados.length;
+
+  const getPrioridadeColor = (prioridade: string) => {
+    switch (prioridade) {
+      case 'alta':
+        return 'bg-red-100 text-red-700 border-red-200';
+      case 'media':
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'baixa':
+        return 'bg-green-100 text-green-700 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  const getDiasRestantes = (dataVencimento: string) => {
+    const vencimento = new Date(dataVencimento);
+    const diffTime = vencimento.getTime() - hoje.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
   const handleExportarRelatorio = () => {
     // Lógica para exportar relatório
@@ -146,30 +201,96 @@ const RelatoriosFinanceiros = () => {
         </Card>
       </div>
 
-      {/* Card separado para Próximos Vencimentos */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <Clock className="h-5 w-5 text-orange-500" />
-            Próximos Vencimentos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Card melhorado para Próximos Vencimentos */}
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="text-2xl font-bold text-orange-600">
-                {proximosVencimentos}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {proximosVencimentos === 1 ? 'despesa vence' : 'despesas vencem'} nos próximos 7 dias
-              </p>
-            </div>
-            {proximosVencimentos > 0 && (
-              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                Atenção
-              </Badge>
-            )}
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <Clock className="h-5 w-5 text-orange-500" />
+              Próximos Vencimentos
+            </CardTitle>
+            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+              {proximosVencimentos} {proximosVencimentos === 1 ? 'despesa' : 'despesas'}
+            </Badge>
           </div>
+          <CardDescription>
+            Despesas que vencem nos próximos 7 dias
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          {proximosVencimentosDetalhados.length > 0 ? (
+            <div className="divide-y">
+              {proximosVencimentosDetalhados.map((vencimento) => {
+                const diasRestantes = getDiasRestantes(vencimento.dataVencimento);
+                return (
+                  <div key={vencimento.id} className="p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          diasRestantes <= 1 ? 'bg-red-500' : 
+                          diasRestantes <= 3 ? 'bg-orange-500' : 'bg-yellow-500'
+                        }`} />
+                        <div>
+                          <div className="font-medium text-gray-900">{vencimento.descricao}</div>
+                          <div className="text-sm text-gray-500 flex items-center gap-2">
+                            <Calendar className="w-3 h-3" />
+                            {format(new Date(vencimento.dataVencimento), "dd 'de' MMMM", { locale: ptBR })}
+                            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                              {vencimento.categoria}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900">
+                          R$ {vencimento.valor.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs ${getPrioridadeColor(vencimento.prioridade)}`}
+                          >
+                            {vencimento.prioridade}
+                          </Badge>
+                          <span className={`text-xs font-medium ${
+                            diasRestantes <= 1 ? 'text-red-600' : 
+                            diasRestantes <= 3 ? 'text-orange-600' : 'text-yellow-600'
+                          }`}>
+                            {diasRestantes === 0 ? 'Hoje' : 
+                             diasRestantes === 1 ? 'Amanhã' : 
+                             `${diasRestantes} dias`}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-6 text-center text-gray-500">
+              <Clock className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <p>Nenhum vencimento nos próximos 7 dias</p>
+            </div>
+          )}
+          {proximosVencimentosDetalhados.length > 0 && (
+            <div className="p-4 bg-gray-50 border-t">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">
+                  Total dos vencimentos:
+                </span>
+                <span className="font-semibold text-gray-900">
+                  R$ {proximosVencimentosDetalhados.reduce((acc, v) => acc + v.valor, 0).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
