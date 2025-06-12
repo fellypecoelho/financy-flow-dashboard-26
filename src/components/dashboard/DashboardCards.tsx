@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Users } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Clock } from 'lucide-react';
 import { DashboardData, Investidor } from '@/types';
+import { Badge } from '@/components/ui/badge';
 
 interface DashboardCardsProps {
   dashboardData: DashboardData;
@@ -77,21 +78,26 @@ const DashboardCards = ({ dashboardData, investidores }: DashboardCardsProps) =>
         </div>
       </div>
 
-      {/* Card Investidores Ativos */}
+      {/* Card Próximos Vencimentos */}
       <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500">Investidores Ativos</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {investidores.filter(inv => inv.ativo).length}
+            <p className="text-sm font-medium text-gray-500">Próximos Vencimentos</p>
+            <p className="text-2xl font-bold text-orange-600">
+              {dashboardData.proximosVencimentos.length}
             </p>
           </div>
-          <div className="p-3 bg-purple-100 rounded-full">
-            <Users className="h-6 w-6 text-purple-600" />
+          <div className="p-3 bg-orange-100 rounded-full">
+            <Clock className="h-6 w-6 text-orange-600" />
           </div>
         </div>
-        <div className="mt-4">
-          <span className="text-sm text-gray-500">Participando ativamente</span>
+        <div className="mt-4 flex items-center justify-between">
+          <span className="text-sm text-gray-500">Próximos 7 dias</span>
+          {dashboardData.proximosVencimentos.length > 0 && (
+            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+              Atenção
+            </Badge>
+          )}
         </div>
       </div>
     </div>
