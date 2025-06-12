@@ -89,8 +89,8 @@ const RelatoriosFinanceiros = () => {
         </div>
       </div>
 
-      {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      {/* Cards de Resumo - Apenas 3 cards agora */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Despesas</CardTitle>
@@ -144,22 +144,34 @@ const RelatoriosFinanceiros = () => {
             </p>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Próximos Vencimentos</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl lg:text-2xl font-bold">
-              {proximosVencimentos}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {proximosVencimentos === 1 ? 'despesa vence' : 'despesas vencem'} em 7 dias
-            </p>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Card separado para Próximos Vencimentos */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-base font-medium flex items-center gap-2">
+            <Clock className="h-5 w-5 text-orange-500" />
+            Próximos Vencimentos
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold text-orange-600">
+                {proximosVencimentos}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {proximosVencimentos === 1 ? 'despesa vence' : 'despesas vencem'} nos próximos 7 dias
+              </p>
+            </div>
+            {proximosVencimentos > 0 && (
+              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                Atenção
+              </Badge>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tabs dos Relatórios */}
       <Tabs defaultValue="geral" className="space-y-6">
