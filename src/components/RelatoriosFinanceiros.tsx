@@ -10,9 +10,9 @@ import RelatorioInvestidores from '@/components/relatorios/RelatorioInvestidores
 import RelatorioFluxoCaixa from '@/components/relatorios/RelatorioFluxoCaixa';
 import RelatorioCategorias from '@/components/relatorios/RelatorioCategorias';
 import { useFinancialData } from '@/hooks/useFinancialData';
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, subMonths, addDays, isAfter, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart3, Download, Filter, TrendingUp, Users, DollarSign, Target } from 'lucide-react';
+import { BarChart3, Download, Filter, TrendingUp, Clock, DollarSign, Target } from 'lucide-react';
 
 const RelatoriosFinanceiros = () => {
   const [periodoSelecionado, setPeriodoSelecionado] = useState<Date>(new Date());
@@ -40,7 +40,16 @@ const RelatoriosFinanceiros = () => {
     .reduce((acc, a) => acc + a.valor, 0);
 
   const saldoMes = totalAportesMes - totalDespesasMes;
-  const totalInvestidores = investidores.length;
+
+  // Cálculo de próximos vencimentos (próximos 7 dias)
+  const hoje = new Date();
+  const proximosSeteDias = addDays(hoje, 7);
+  const proximosVencimentos = despesas.filter(d => {
+    const dataVencimento = new Date(d.dataVencimento);
+    return d.status === 'pendente' && 
+           isAfter(dataVencimento, hoje) && 
+           isBefore(dataVencimento, proximosSeteDias);
+  }).length;
 
   const handleExportarRelatorio = () => {
     // Lógica para exportar relatório
@@ -81,14 +90,14 @@ const RelatoriosFinanceiros = () => {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Despesas</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-xl lg:text-2xl font-bold text-red-600">
               R$ {totalDespesasMes.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -106,7 +115,7 @@ const RelatoriosFinanceiros = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-xl lg:text-2xl font-bold text-green-600">
               R$ {totalAportesMes.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -124,7 +133,7 @@ const RelatoriosFinanceiros = () => {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${saldoMes >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-xl lg:text-2xl font-bold ${saldoMes >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               R$ {saldoMes.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -138,15 +147,15 @@ const RelatoriosFinanceiros = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Investidores Ativos</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Próximos Vencimentos</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {totalInvestidores}
+            <div className="text-xl lg:text-2xl font-bold">
+              {proximosVencimentos}
             </div>
             <p className="text-xs text-muted-foreground">
-              investidores cadastrados
+              {proximosVencimentos === 1 ? 'despesa vence' : 'despesas vencem'} em 7 dias
             </p>
           </CardContent>
         </Card>
@@ -160,11 +169,11 @@ const RelatoriosFinanceiros = () => {
             Geral
           </TabsTrigger>
           <TabsTrigger value="investidores" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
+            <TrendingUp className="w-4 h-4" />
             Investidores
           </TabsTrigger>
           <TabsTrigger value="fluxo-caixa" className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
+            <DollarSign className="w-4 h-4" />
             Fluxo de Caixa
           </TabsTrigger>
           <TabsTrigger value="categorias" className="flex items-center gap-2">
