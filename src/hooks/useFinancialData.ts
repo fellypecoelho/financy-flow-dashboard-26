@@ -24,7 +24,7 @@ const mockCartoes: Cartao[] = [
 ];
 
 export const useFinancialData = () => {
-  const [investidores] = useState<Investidor[]>(mockInvestidores);
+  const [investidores, setInvestidores] = useState<Investidor[]>(mockInvestidores);
   const [categorias] = useState<Categoria[]>(mockCategorias);
   const [cartoes, setCartoes] = useState<Cartao[]>(mockCartoes);
   const [despesas, setDespesas] = useState<Despesa[]>([]);
@@ -76,6 +76,9 @@ export const useFinancialData = () => {
       { id: '1', investidorId: '1', valor: 3000.00, data: '2024-12-01', descricao: 'Aporte mensal' },
       { id: '2', investidorId: '2', valor: 2500.00, data: '2024-12-01', descricao: 'Aporte mensal' },
       { id: '3', investidorId: '3', valor: 3000.00, data: '2024-12-01', descricao: 'Aporte mensal' },
+      { id: '4', investidorId: '1', valor: 5000.00, data: '2024-11-01', descricao: 'Aporte extra' },
+      { id: '5', investidorId: '2', valor: 2000.00, data: '2024-11-01', descricao: 'Aporte mensal' },
+      { id: '6', investidorId: '3', valor: 4000.00, data: '2024-11-01', descricao: 'Aporte mensal' },
     ];
 
     setDespesas(mockDespesas);
@@ -113,6 +116,7 @@ export const useFinancialData = () => {
     dashboardData,
     setDespesas,
     setAportes,
-    setCartoes
+    setCartoes,
+    setInvestidores
   };
 };

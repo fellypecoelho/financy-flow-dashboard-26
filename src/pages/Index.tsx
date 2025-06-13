@@ -4,6 +4,7 @@ import Layout from '@/components/Layout';
 import Dashboard from '@/components/Dashboard';
 import ExpenseManagement from '@/components/ExpenseManagement';
 import AporteManagement from '@/components/AporteManagement';
+import InvestidorManagement from '@/components/InvestidorManagement';
 import CartaoManagement from '@/components/CartaoManagement';
 import CalendarioFinanceiro from '@/components/CalendarioFinanceiro';
 import RelatoriosFinanceiros from '@/components/RelatoriosFinanceiros';
@@ -20,6 +21,8 @@ const Index = () => {
         return <ExpenseManagement />;
       case 'aportes':
         return <AporteManagement />;
+      case 'investidores':
+        return <InvestidorManagement />;
       case 'cartoes':
         return <CartaoManagement />;
       case 'calendario':
