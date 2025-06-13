@@ -1,15 +1,17 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Search, Filter, Edit, Trash2, Eye, Settings } from 'lucide-react';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { Despesa, TipoDespesa, StatusDespesa, FormaPagamento } from '@/types';
 import ExpenseModal from './expenses/ExpenseModal';
 import ExpenseFilters from './expenses/ExpenseFilters';
 import ExpenseTable from './expenses/ExpenseTable';
+import CategoryModal from './expenses/CategoryModal';
 
 const ExpenseManagement = () => {
-  const { despesas, categorias, cartoes, investidores, setDespesas } = useFinancialData();
+  const { despesas, categorias, cartoes, investidores, setDespesas, setCategorias } = useFinancialData();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Despesa | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
@@ -64,13 +66,22 @@ const ExpenseManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Despesas</h1>
           <p className="text-gray-500 mt-1">Controle todas as suas despesas</p>
         </div>
-        <button
-          onClick={handleAddExpense}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Nova Despesa
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <Settings className="h-5 w-5 mr-2" />
+            Gerenciar Categorias
+          </button>
+          <button
+            onClick={handleAddExpense}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Nova Despesa
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -110,7 +121,7 @@ const ExpenseManagement = () => {
         />
       </div>
 
-      {/* Modal */}
+      {/* Expense Modal */}
       {isModalOpen && (
         <ExpenseModal
           expense={selectedExpense}
@@ -119,6 +130,15 @@ const ExpenseManagement = () => {
           investidores={investidores}
           onSave={handleSaveExpense}
           onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {/* Category Modal */}
+      {isCategoryModalOpen && (
+        <CategoryModal
+          categorias={categorias}
+          onSave={setCategorias}
+          onClose={() => setIsCategoryModalOpen(false)}
         />
       )}
     </div>
