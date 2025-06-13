@@ -9,7 +9,8 @@ import {
   Settings,
   Menu,
   X,
-  Wallet
+  Wallet,
+  Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,7 @@ const Layout = ({ children, currentPage, onPageChange }: LayoutProps) => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'despesas', label: 'Despesas', icon: CreditCard },
     { id: 'aportes', label: 'Aportes', icon: TrendingUp },
+    { id: 'investidores', label: 'Investidores', icon: Users },
     { id: 'cartoes', label: 'Cartões', icon: Wallet },
     { id: 'calendario', label: 'Calendário', icon: Calendar },
     { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
