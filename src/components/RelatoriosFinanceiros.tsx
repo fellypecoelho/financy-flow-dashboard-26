@@ -4,19 +4,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import RelatorioGeral from '@/components/relatorios/RelatorioGeral';
 import RelatorioInvestidores from '@/components/relatorios/RelatorioInvestidores';
 import RelatorioFluxoCaixa from '@/components/relatorios/RelatorioFluxoCaixa';
 import RelatorioCategorias from '@/components/relatorios/RelatorioCategorias';
+import FiltrosAvancados from '@/components/relatorios/FiltrosAvancados';
+import ExportarRelatorio from '@/components/relatorios/ExportarRelatorio';
+import NotificacaoVencimentos from '@/components/relatorios/NotificacaoVencimentos';
 import { useFinancialData } from '@/hooks/useFinancialData';
-import { format, startOfMonth, endOfMonth, subMonths, addDays, isAfter, isBefore } from 'date-fns';
+import { format, startOfMonth, endOfMonth, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BarChart3, Download, Filter, TrendingUp, Clock, DollarSign, Target, Calendar, AlertTriangle } from 'lucide-react';
+import { BarChart3, Download, Filter, TrendingUp, Clock, DollarSign, Target, Calendar, Settings } from 'lucide-react';
 
 const RelatoriosFinanceiros = () => {
   const [periodoSelecionado, setPeriodoSelecionado] = useState<Date>(new Date());
   const [tipoRelatorio, setTipoRelatorio] = useState('mes-atual');
+  const [filtrosAtivos, setFiltrosAtivos] = useState({});
   
   const { despesas, aportes, investidores } = useFinancialData();
 
@@ -43,7 +46,6 @@ const RelatoriosFinanceiros = () => {
 
   // Simulação de próximos vencimentos com mais detalhes
   const hoje = new Date();
-  const proximosSeteDias = addDays(hoje, 7);
   
   const proximosVencimentosDetalhados = [
     {
@@ -106,9 +108,9 @@ const RelatoriosFinanceiros = () => {
     return diffDays;
   };
 
-  const handleExportarRelatorio = () => {
-    // Lógica para exportar relatório
-    console.log('Exportando relatório...');
+  const handleFiltrosChange = (novosFiltros: any) => {
+    setFiltrosAtivos(novosFiltros);
+    console.log('Filtros aplicados:', novosFiltros);
   };
 
   return (
@@ -137,14 +139,10 @@ const RelatoriosFinanceiros = () => {
               <SelectItem value="ano">Ano</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={handleExportarRelatorio}>
-            <Download className="w-4 h-4 mr-2" />
-            Exportar
-          </Button>
         </div>
       </div>
 
-      {/* Cards de Resumo - Apenas 3 cards agora */}
+      {/* Cards de Resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -201,7 +199,14 @@ const RelatoriosFinanceiros = () => {
         </Card>
       </div>
 
-      {/* Card melhorado para Próximos Vencimentos */}
+      {/* Cards Funcionais */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <FiltrosAvancados onFiltrosChange={handleFiltrosChange} />
+        <ExportarRelatorio dadosRelatorio={{ despesas, aportes, investidores }} periodo={periodoSelecionado} />
+        <NotificacaoVencimentos />
+      </div>
+
+      {/* Card de Próximos Vencimentos */}
       <Card className="overflow-hidden">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
