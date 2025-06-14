@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useFinancialData } from '@/hooks/useFinancialData';
+import { useCartaoFilters } from '@/hooks/useCartaoFilters';
 import { Cartao } from '@/types';
 import { Card } from '@/components/ui/card';
 import CartaoHeader from './cartoes/CartaoHeader';
@@ -13,23 +13,10 @@ import CartaoTransactions from './cartoes/CartaoTransactions';
 
 const CartaoManagement = () => {
   const { cartoes, investidores, setCartoes, despesas } = useFinancialData();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    investidor: '',
-    bandeira: ''
-  });
+  const { searchTerm, setSearchTerm, filters, setFilters, filteredCartoes } = useCartaoFilters(cartoes);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCartao, setEditingCartao] = useState<Cartao | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
-
-  const filteredCartoes = cartoes.filter(cartao => {
-    const matchesSearch = cartao.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         cartao.bandeira.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesInvestidor = !filters.investidor || cartao.investidorId === filters.investidor;
-    const matchesBandeira = !filters.bandeira || cartao.bandeira === filters.bandeira;
-    
-    return matchesSearch && matchesInvestidor && matchesBandeira;
-  });
 
   const handleAddCartao = () => {
     setEditingCartao(null);

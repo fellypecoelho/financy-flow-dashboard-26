@@ -1,4 +1,6 @@
 
+import { formatCurrency, formatCardNumber } from './formatUtils';
+
 export const getBandeiraColor = (bandeira: string) => {
   switch (bandeira) {
     case 'Visa': return 'text-blue-600 bg-blue-100';
@@ -19,14 +21,9 @@ export const getBandeiraGradient = (bandeira: string) => {
   }
 };
 
-export const formatCardNumber = () => {
-  const lastFourDigits = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
-  return `•••• •••• •••• ${lastFourDigits}`;
-};
+export { formatCardNumber };
 
-export const formatLimit = (valor: number) => {
-  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
+export const formatLimit = formatCurrency;
 
 export const calculateLimiteUtilizado = (cartaoId: string, despesas: any[]) => {
   return despesas

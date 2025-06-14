@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { useFinancialData } from '@/hooks/useFinancialData';
-import { Despesa, TipoDespesa, StatusDespesa } from '@/types';
+import { useExpenseFilters } from '@/hooks/useExpenseFilters';
+import { Despesa } from '@/types';
 import ExpenseModal from './expenses/ExpenseModal';
 import CategoryModal from './expenses/CategoryModal';
 import ExpenseHeader from './expenses/ExpenseHeader';
@@ -10,17 +10,10 @@ import ExpenseTableContainer from './expenses/ExpenseTableContainer';
 
 const ExpenseManagement = () => {
   const { despesas, categorias, cartoes, investidores, setDespesas, setCategorias } = useFinancialData();
+  const { searchTerm, setSearchTerm, filters, setFilters, filteredExpenses } = useExpenseFilters(despesas);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Despesa | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    categoria: '',
-    status: '' as StatusDespesa | '',
-    tipo: '' as TipoDespesa | '',
-    dataInicio: '',
-    dataFim: ''
-  });
 
   const handleAddExpense = () => {
     setSelectedExpense(null);
@@ -44,19 +37,6 @@ const ExpenseManagement = () => {
     }
     setIsModalOpen(false);
   };
-
-  const filteredExpenses = despesas.filter(expense => {
-    const matchesSearch = expense.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         expense.origem.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategoria = !filters.categoria || expense.categoriaId === filters.categoria;
-    const matchesStatus = !filters.status || expense.status === filters.status;
-    const matchesTipo = !filters.tipo || expense.tipo === filters.tipo;
-    const matchesDataInicio = !filters.dataInicio || expense.dataVencimento >= filters.dataInicio;
-    const matchesDataFim = !filters.dataFim || expense.dataVencimento <= filters.dataFim;
-
-    return matchesSearch && matchesCategoria && matchesStatus && matchesTipo && 
-           matchesDataInicio && matchesDataFim;
-  });
 
   return (
     <div className="space-y-6">
