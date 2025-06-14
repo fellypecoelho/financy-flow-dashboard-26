@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Edit, Trash2, Eye } from 'lucide-react';
 import { Despesa, Categoria, Cartao } from '@/types';
@@ -94,16 +95,16 @@ const ExpenseTable = ({ expenses, categorias, cartoes, onEdit, onDelete }: Expen
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <CategoryIcon 
-                      iconName={categoria?.icone || 'Tag'} 
-                      size={16} 
-                      className="mr-2" 
-                      style={{ color: categoria?.cor }} 
-                    />
                     <div 
-                      className="w-3 h-3 rounded-full mr-2"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
                       style={{ backgroundColor: categoria?.cor }}
-                    />
+                    >
+                      <CategoryIcon 
+                        iconName={categoria?.icone || 'Tag'} 
+                        size={16} 
+                        className="text-white" 
+                      />
+                    </div>
                     <span className="text-sm text-gray-900">{categoria?.nome}</span>
                   </div>
                 </td>

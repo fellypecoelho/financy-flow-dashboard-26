@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Edit, Trash2, Palette } from 'lucide-react';
 import { Categoria } from '@/types';
@@ -126,7 +127,12 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Ícone</label>
                   <div className="flex items-center space-x-3 mb-2">
-                    <CategoryIcon iconName={formData.icone} size={20} style={{ color: formData.cor }} />
+                    <div 
+                      className="w-8 h-8 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: formData.cor }}
+                    >
+                      <CategoryIcon iconName={formData.icone} size={16} className="text-white" />
+                    </div>
                     <span className="text-sm text-gray-600">Prévia do ícone</span>
                   </div>
                   <select
@@ -174,15 +180,16 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 {localCategorias.map(categoria => (
                   <div key={categoria.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <CategoryIcon 
-                        iconName={categoria.icone} 
-                        size={16} 
-                        style={{ color: categoria.cor }} 
-                      />
                       <div 
-                        className="w-4 h-4 rounded-full"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
                         style={{ backgroundColor: categoria.cor }}
-                      />
+                      >
+                        <CategoryIcon 
+                          iconName={categoria.icone} 
+                          size={16} 
+                          className="text-white" 
+                        />
+                      </div>
                       <span className="font-medium text-gray-900">{categoria.nome}</span>
                     </div>
                     <div className="flex items-center space-x-2">

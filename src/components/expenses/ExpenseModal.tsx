@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Despesa, Categoria, Cartao, Investidor, TipoDespesa, FormaPagamento, FrequenciaRecorrente, StatusDespesa } from '@/types';
@@ -135,11 +136,16 @@ const ExpenseModal = ({ expense, categorias, cartoes, investidores, onSave, onCl
               </select>
               {formData.categoriaId && (
                 <div className="mt-2 flex items-center space-x-2">
-                  <CategoryIcon 
-                    iconName={categorias.find(c => c.id === formData.categoriaId)?.icone || 'Tag'} 
-                    size={16} 
-                    style={{ color: categorias.find(c => c.id === formData.categoriaId)?.cor }} 
-                  />
+                  <div 
+                    className="w-6 h-6 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: categorias.find(c => c.id === formData.categoriaId)?.cor }}
+                  >
+                    <CategoryIcon 
+                      iconName={categorias.find(c => c.id === formData.categoriaId)?.icone || 'Tag'} 
+                      size={14} 
+                      className="text-white" 
+                    />
+                  </div>
                   <span className="text-sm text-gray-600">
                     {categorias.find(c => c.id === formData.categoriaId)?.nome}
                   </span>
