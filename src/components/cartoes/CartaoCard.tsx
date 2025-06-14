@@ -2,6 +2,8 @@
 import React from 'react';
 import { Cartao, Investidor } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
+import { useFinancialData } from '@/hooks/useFinancialData';
+import { useCartaoCalculation } from '@/hooks/useCartaoCalculations';
 import CartaoVisual from './CartaoVisual';
 import CartaoInfo from './CartaoInfo';
 
@@ -13,15 +15,19 @@ interface CartaoCardProps {
 }
 
 const CartaoCard = ({ cartao, investidores, onEdit, onDelete }: CartaoCardProps) => {
-  const limiteUtilizado = Math.random() * cartao.limite; // Simulação
-  const percentualUtilizado = (limiteUtilizado / cartao.limite) * 100;
+  const { despesas } = useFinancialData();
+  const calculation = useCartaoCalculation(cartao.id, [cartao], despesas);
+
+  if (!calculation) return null;
+
+  const { utilizado, percentualUtilizado } = calculation;
 
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
         <CartaoVisual 
           cartao={cartao}
-          limiteUtilizado={limiteUtilizado}
+          limiteUtilizado={utilizado}
           percentualUtilizado={percentualUtilizado}
         />
         <CartaoInfo 
