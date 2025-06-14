@@ -19,6 +19,8 @@ const ExpenseFilters = ({ filters, onFiltersChange, categorias }: ExpenseFilters
     onFiltersChange({ ...filters, [key]: value });
   };
 
+  const selectedCategoria = categorias.find(cat => cat.id === filters.categoria);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
       <div>
@@ -35,6 +37,21 @@ const ExpenseFilters = ({ filters, onFiltersChange, categorias }: ExpenseFilters
             </option>
           ))}
         </select>
+        {selectedCategoria && (
+          <div className="mt-2 flex items-center space-x-2">
+            <div 
+              className="w-6 h-6 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: selectedCategoria.cor }}
+            >
+              <CategoryIcon 
+                iconName={selectedCategoria.icone} 
+                size={14} 
+                className="text-white" 
+              />
+            </div>
+            <span className="text-sm text-gray-600">{selectedCategoria.nome}</span>
+          </div>
+        )}
       </div>
 
       <div>

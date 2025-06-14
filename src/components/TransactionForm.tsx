@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus, Calendar, DollarSign, Tag, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 const TransactionForm = () => {
   const { toast } = useToast();
@@ -21,8 +21,21 @@ const TransactionForm = () => {
   });
 
   const categories = {
-    income: ['Salário', 'Freelance', 'Investimentos', 'Outros'],
-    expense: ['Alimentação', 'Transporte', 'Moradia', 'Lazer', 'Saúde', 'Educação', 'Outros']
+    income: [
+      { name: 'Salário', icon: 'Briefcase', color: '#22c55e' },
+      { name: 'Freelance', icon: 'Laptop', color: '#3b82f6' },
+      { name: 'Investimentos', icon: 'TrendingUp', color: '#8b5cf6' },
+      { name: 'Outros', icon: 'Plus', color: '#6b7280' }
+    ],
+    expense: [
+      { name: 'Alimentação', icon: 'UtensilsCrossed', color: '#ef4444' },
+      { name: 'Transporte', icon: 'Car', color: '#f97316' },
+      { name: 'Moradia', icon: 'Home', color: '#eab308' },
+      { name: 'Lazer', icon: 'Gamepad2', color: '#ec4899' },
+      { name: 'Saúde', icon: 'Heart', color: '#06b6d4' },
+      { name: 'Educação', icon: 'GraduationCap', color: '#84cc16' },
+      { name: 'Outros', icon: 'Tag', color: '#6b7280' }
+    ]
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -63,6 +76,10 @@ const TransactionForm = () => {
       ...(field === 'type' && { category: '' })
     }));
   };
+
+  const selectedCategoryData = formData.type && formData.category 
+    ? categories[formData.type as keyof typeof categories].find(cat => cat.name === formData.category)
+    : null;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -157,12 +174,35 @@ const TransactionForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {formData.type && categories[formData.type as keyof typeof categories].map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                      <SelectItem key={category.name} value={category.name}>
+                        <span className="flex items-center">
+                          <div 
+                            className="w-4 h-4 rounded flex items-center justify-center mr-2"
+                            style={{ backgroundColor: category.color }}
+                          >
+                            <CategoryIcon iconName={category.icon} size={12} className="text-white" />
+                          </div>
+                          {category.name}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {selectedCategoryData && (
+                  <div className="flex items-center space-x-2">
+                    <div 
+                      className="w-6 h-6 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: selectedCategoryData.color }}
+                    >
+                      <CategoryIcon 
+                        iconName={selectedCategoryData.icon} 
+                        size={14} 
+                        className="text-white" 
+                      />
+                    </div>
+                    <span className="text-sm text-gray-600">{selectedCategoryData.name}</span>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -197,12 +237,26 @@ const TransactionForm = () => {
               <div className="bg-gray-50 rounded-lg p-4 border">
                 <h4 className="font-medium text-gray-900 mb-2">Preview:</h4>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{formData.title || 'Título'}</p>
-                    <p className="text-sm text-gray-500">
-                      {formData.category && `${formData.category} • `}
-                      {formData.date && new Date(formData.date).toLocaleDateString('pt-BR')}
-                    </p>
+                  <div className="flex items-center space-x-3">
+                    {selectedCategoryData && (
+                      <div 
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: selectedCategoryData.color }}
+                      >
+                        <CategoryIcon 
+                          iconName={selectedCategoryData.icon} 
+                          size={16} 
+                          className="text-white" 
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium">{formData.title || 'Título'}</p>
+                      <p className="text-sm text-gray-500">
+                        {formData.category && `${formData.category} • `}
+                        {formData.date && new Date(formData.date).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
                   </div>
                   <span className={`font-semibold ${
                     formData.type === 'income' ? 'text-green-600' : 'text-red-600'
