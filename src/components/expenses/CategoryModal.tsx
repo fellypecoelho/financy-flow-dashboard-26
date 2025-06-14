@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Edit, Trash2, Palette } from 'lucide-react';
 import { Categoria } from '@/types';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface CategoryModalProps {
   categorias: Categoria[];
@@ -125,6 +125,10 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Ícone</label>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <CategoryIcon iconName={formData.icone} size={20} style={{ color: formData.cor }} />
+                    <span className="text-sm text-gray-600">Prévia do ícone</span>
+                  </div>
                   <select
                     value={formData.icone}
                     onChange={(e) => setFormData({...formData, icone: e.target.value})}
@@ -170,12 +174,16 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 {localCategorias.map(categoria => (
                   <div key={categoria.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                     <div className="flex items-center space-x-3">
+                      <CategoryIcon 
+                        iconName={categoria.icone} 
+                        size={16} 
+                        style={{ color: categoria.cor }} 
+                      />
                       <div 
                         className="w-4 h-4 rounded-full"
                         style={{ backgroundColor: categoria.cor }}
                       />
                       <span className="font-medium text-gray-900">{categoria.nome}</span>
-                      <span className="text-sm text-gray-500">{categoria.icone}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button

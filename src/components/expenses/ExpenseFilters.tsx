@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Categoria, TipoDespesa, StatusDespesa } from '@/types';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface ExpenseFiltersProps {
   filters: {
@@ -30,7 +30,9 @@ const ExpenseFilters = ({ filters, onFiltersChange, categorias }: ExpenseFilters
         >
           <option value="">Todas</option>
           {categorias.map(categoria => (
-            <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
+            <option key={categoria.id} value={categoria.id}>
+              {categoria.nome}
+            </option>
           ))}
         </select>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Despesa, Categoria, Cartao, Investidor, TipoDespesa, FormaPagamento, FrequenciaRecorrente, StatusDespesa } from '@/types';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface ExpenseModalProps {
   expense: Despesa | null;
@@ -127,9 +128,23 @@ const ExpenseModal = ({ expense, categorias, cartoes, investidores, onSave, onCl
               >
                 <option value="">Selecione uma categoria</option>
                 {categorias.map(categoria => (
-                  <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
+                  <option key={categoria.id} value={categoria.id}>
+                    {categoria.nome}
+                  </option>
                 ))}
               </select>
+              {formData.categoriaId && (
+                <div className="mt-2 flex items-center space-x-2">
+                  <CategoryIcon 
+                    iconName={categorias.find(c => c.id === formData.categoriaId)?.icone || 'Tag'} 
+                    size={16} 
+                    style={{ color: categorias.find(c => c.id === formData.categoriaId)?.cor }} 
+                  />
+                  <span className="text-sm text-gray-600">
+                    {categorias.find(c => c.id === formData.categoriaId)?.nome}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div>
