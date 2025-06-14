@@ -1,3 +1,4 @@
+
 export interface Investidor {
   id: string;
   nome: string;
@@ -72,6 +73,10 @@ export interface DashboardData {
   };
   saldosInvestidores: { investidorId: string; saldo: number }[];
   proximosVencimentos: Despesa[];
+  // Adicionando as propriedades que estão sendo usadas
+  totalReceitas: number;
+  totalDespesas: number;
+  saldoTotal: number;
 }
 
 export interface EventoCalendario {

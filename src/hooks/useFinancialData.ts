@@ -30,6 +30,7 @@ export const useFinancialData = () => {
   const [despesas, setDespesas] = useState<Despesa[]>([]);
   const [aportes, setAportes] = useState<Aporte[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Simulação de dados para desenvolvimento
   useEffect(() => {
@@ -103,8 +104,14 @@ export const useFinancialData = () => {
         investidorId: inv.id,
         saldo: inv.saldoAtual
       })),
-      proximosVencimentos: mockDespesas.filter(d => d.status === 'pendente').slice(0, 5)
+      proximosVencimentos: mockDespesas.filter(d => d.status === 'pendente').slice(0, 5),
+      // Adicionando as propriedades necessárias
+      totalReceitas: totalAportes,
+      totalDespesas: totalDespesas,
+      saldoTotal: totalAportes - totalDespesas
     });
+
+    setIsLoading(false);
   }, [investidores]);
 
   return {
@@ -114,6 +121,7 @@ export const useFinancialData = () => {
     despesas,
     aportes,
     dashboardData,
+    isLoading,
     setDespesas,
     setAportes,
     setCartoes,

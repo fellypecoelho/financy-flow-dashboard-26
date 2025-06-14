@@ -20,6 +20,8 @@ const ResponsiveValue = ({
   prefix
 }: ResponsiveValueProps) => {
   const formatValue = (val: number) => {
+    if (val === undefined || val === null) return '0';
+    
     if (currency) {
       return val.toLocaleString('pt-BR', { 
         style: 'currency', 
