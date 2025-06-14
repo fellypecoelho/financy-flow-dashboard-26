@@ -2,6 +2,7 @@
 import React from 'react';
 import { Calendar, AlertCircle } from 'lucide-react';
 import { Despesa, Categoria } from '@/types';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface UpcomingPaymentsProps {
   despesas: Despesa[];
@@ -44,9 +45,15 @@ const UpcomingPayments = ({ despesas, categorias }: UpcomingPaymentsProps) => {
               <div key={despesa.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center">
                   <div 
-                    className="w-3 h-3 rounded-full mr-3"
-                    style={{ backgroundColor: categoria?.cor || '#gray' }}
-                  />
+                    className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                    style={{ backgroundColor: categoria?.cor || '#6b7280' }}
+                  >
+                    <CategoryIcon 
+                      iconName={categoria?.icone || 'Tag'} 
+                      size={16} 
+                      className="text-white" 
+                    />
+                  </div>
                   <div>
                     <p className="font-medium text-gray-900">{despesa.descricao}</p>
                     <p className="text-sm text-gray-500">
