@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus, Search, CreditCard, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useFinancialData } from '@/hooks/useFinancialData';
@@ -89,82 +88,82 @@ const CartaoManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Cartões</h1>
-          <p className="text-gray-500 mt-1">Controle de cartões de crédito e faturas da empresa</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Gerenciamento de Cartões</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">Controle de cartões de crédito e faturas da empresa</p>
         </div>
-        <Button onClick={handleAddCartao} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={handleAddCartao} className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Adicionar Cartão
         </Button>
       </div>
 
       {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Limite Total</p>
-                <p className="text-2xl font-bold text-blue-600">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Limite Total</p>
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 truncate">
                   {limiteTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">{cartoesAtivos} cartões ativos</p>
+                <p className="text-xs text-gray-500 mt-1 truncate">{cartoesAtivos} cartões ativos</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <CreditCard className="h-6 w-6 text-blue-600" />
+              <div className="p-2 lg:p-3 bg-blue-100 rounded-lg flex-shrink-0 ml-2">
+                <CreditCard className="h-4 w-4 lg:h-6 lg:w-6 text-blue-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Limite Utilizado</p>
-                <p className="text-2xl font-bold text-orange-600">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Limite Utilizado</p>
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600 truncate">
                   {limiteUtilizado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1 truncate">
                   {limiteTotal > 0 ? Math.round((limiteUtilizado / limiteTotal) * 100) : 0}% do limite total
                 </p>
               </div>
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-orange-600" />
+              <div className="p-2 lg:p-3 bg-orange-100 rounded-lg flex-shrink-0 ml-2">
+                <TrendingUp className="h-4 w-4 lg:h-6 lg:w-6 text-orange-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Próxima Fatura</p>
-                <p className="text-2xl font-bold text-red-600">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Próxima Fatura</p>
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600 truncate">
                   {proximaFatura.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
-                <p className="text-xs text-red-600 mt-1">Vence em 8 dias</p>
+                <p className="text-xs text-red-600 mt-1 truncate">Vence em 8 dias</p>
               </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="p-2 lg:p-3 bg-red-100 rounded-lg flex-shrink-0 ml-2">
+                <AlertTriangle className="h-4 w-4 lg:h-6 lg:w-6 text-red-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Cartões Ativos</p>
-                <p className="text-2xl font-bold text-green-600">{cartoesAtivos}</p>
-                <p className="text-xs text-green-600 mt-1">Todos funcionais</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Cartões Ativos</p>
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">{cartoesAtivos}</p>
+                <p className="text-xs text-green-600 mt-1 truncate">Todos funcionais</p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="p-2 lg:p-3 bg-green-100 rounded-lg flex-shrink-0 ml-2">
+                <CheckCircle className="h-4 w-4 lg:h-6 lg:w-6 text-green-600" />
               </div>
             </div>
           </CardContent>
