@@ -1,14 +1,15 @@
+
 import React, { useState } from 'react';
-import { Plus, Search, CreditCard, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { Cartao } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import CartaoFilters from './cartoes/CartaoFilters';
+import { Card } from '@/components/ui/card';
+import CartaoHeader from './cartoes/CartaoHeader';
+import CartaoStats from './cartoes/CartaoStats';
+import CartaoSearch from './cartoes/CartaoSearch';
 import CartaoTable from './cartoes/CartaoTable';
 import CartaoModal from './cartoes/CartaoModal';
 import CartaoCard from './cartoes/CartaoCard';
+import CartaoTransactions from './cartoes/CartaoTransactions';
 
 const CartaoManagement = () => {
   const { cartoes, investidores, setCartoes, despesas } = useFinancialData();
@@ -64,136 +65,20 @@ const CartaoManagement = () => {
     setEditingCartao(null);
   };
 
-  // Calcular estatísticas
-  const limiteTotal = cartoes.reduce((acc, cartao) => acc + cartao.limite, 0);
-  const limiteUtilizado = despesas
-    .filter(d => d.formaPagamento === 'cartao' && d.cartaoId)
-    .reduce((acc, despesa) => acc + despesa.valor, 0);
-  
-  const proximaFatura = despesas
-    .filter(d => d.formaPagamento === 'cartao' && d.status === 'pendente')
-    .reduce((acc, despesa) => acc + despesa.valor, 0);
-
-  const cartoesAtivos = cartoes.length;
-
-  // Despesas recentes do cartão
-  const despesasCartao = despesas
-    .filter(d => d.formaPagamento === 'cartao')
-    .slice(0, 5);
-
-  const proximosVencimentos = despesas
-    .filter(d => d.formaPagamento === 'cartao' && d.status === 'pendente')
-    .slice(0, 5);
-
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Gerenciamento de Cartões</h1>
-          <p className="text-gray-500 mt-1 text-sm sm:text-base">Controle de cartões de crédito e faturas da empresa</p>
-        </div>
-        <Button onClick={handleAddCartao} className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
-          Adicionar Cartão
-        </Button>
-      </div>
+      <CartaoHeader onAddCartao={handleAddCartao} />
 
-      {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-        <Card>
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div className="min-w-0 flex-1 pr-2">
-                <p className="text-xs font-medium text-gray-500 mb-1">Limite Total</p>
-                <p className="text-base sm:text-lg lg:text-2xl font-bold text-blue-600 leading-tight">
-                  {limiteTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">{cartoesAtivos} cartões ativos</p>
-              </div>
-              <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
-                <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <CartaoStats cartoes={cartoes} despesas={despesas} />
 
-        <Card>
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div className="min-w-0 flex-1 pr-2">
-                <p className="text-xs font-medium text-gray-500 mb-1">Limite Utilizado</p>
-                <p className="text-base sm:text-lg lg:text-2xl font-bold text-orange-600 leading-tight">
-                  {limiteUtilizado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {limiteTotal > 0 ? Math.round((limiteUtilizado / limiteTotal) * 100) : 0}% do limite total
-                </p>
-              </div>
-              <div className="p-2 bg-orange-100 rounded-lg flex-shrink-0">
-                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <CartaoSearch
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filters={filters}
+        onFiltersChange={setFilters}
+        investidores={investidores}
+      />
 
-        <Card>
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div className="min-w-0 flex-1 pr-2">
-                <p className="text-xs font-medium text-gray-500 mb-1">Próxima Fatura</p>
-                <p className="text-base sm:text-lg lg:text-2xl font-bold text-red-600 leading-tight">
-                  {proximaFatura.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
-                <p className="text-xs text-red-600 mt-1">Vence em 8 dias</p>
-              </div>
-              <div className="p-2 bg-red-100 rounded-lg flex-shrink-0">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div className="min-w-0 flex-1 pr-2">
-                <p className="text-xs font-medium text-gray-500 mb-1">Cartões Ativos</p>
-                <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">{cartoesAtivos}</p>
-                <p className="text-xs text-green-600 mt-1">Todos funcionais</p>
-              </div>
-              <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filters */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Buscar por nome do cartão ou bandeira..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <CartaoFilters 
-              filters={filters}
-              onFiltersChange={setFilters}
-              investidores={investidores}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Controle de Visualização e Cartões */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">Seus Cartões</h2>
@@ -248,83 +133,8 @@ const CartaoManagement = () => {
         )}
       </div>
 
-      {/* Seção de Transações e Próximas Faturas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Transações Recentes</CardTitle>
-              <Button variant="ghost" size="sm" className="text-blue-600">
-                Ver Todas
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {despesasCartao.map((despesa) => (
-                <div key={despesa.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <CreditCard className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{despesa.descricao}</p>
-                      <p className="text-sm text-gray-500">{despesa.origem}</p>
-                    </div>
-                  </div>
-                  <span className="font-semibold text-red-600">
-                    -{despesa.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <CartaoTransactions cartoes={cartoes} despesas={despesas} />
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Próximas Faturas</CardTitle>
-              <Button variant="ghost" size="sm" className="text-blue-600">
-                Ver Todas
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {proximosVencimentos.map((despesa) => {
-                const cartao = cartoes.find(c => c.id === despesa.cartaoId);
-                return (
-                  <div key={despesa.id} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-8 bg-red-500 rounded-full"></div>
-                      <div>
-                        <p className="font-medium text-gray-900">{cartao?.nome}</p>
-                        <p className="text-sm text-gray-500">
-                          Vence em 8 dias • {new Date(despesa.dataVencimento).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="font-semibold text-red-600">
-                      {despesa.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                    </span>
-                  </div>
-                );
-              })}
-              <div className="pt-4 border-t border-gray-200">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-gray-900">Total das Próximas Faturas</span>
-                  <span className="font-bold text-red-600">
-                    {proximaFatura.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Modal */}
       <CartaoModal
         isOpen={isModalOpen}
         onClose={() => {
