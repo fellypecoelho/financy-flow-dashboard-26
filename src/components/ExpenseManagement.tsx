@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Edit, Trash2, Eye, Settings } from 'lucide-react';
 import { useFinancialData } from '@/hooks/useFinancialData';
-import { Despesa, TipoDespesa, StatusDespesa, FormaPagamento } from '@/types';
+import { Despesa, TipoDespesa, StatusDespesa } from '@/types';
 import ExpenseModal from './expenses/ExpenseModal';
-import ExpenseFilters from './expenses/ExpenseFilters';
-import ExpenseTable from './expenses/ExpenseTable';
 import CategoryModal from './expenses/CategoryModal';
+import ExpenseHeader from './expenses/ExpenseHeader';
+import ExpenseSearchBar from './expenses/ExpenseSearchBar';
+import ExpenseTableContainer from './expenses/ExpenseTableContainer';
 
 const ExpenseManagement = () => {
   const { despesas, categorias, cartoes, investidores, setDespesas, setCategorias } = useFinancialData();
@@ -60,66 +60,26 @@ const ExpenseManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Despesas</h1>
-          <p className="text-gray-500 mt-1">Controle todas as suas despesas</p>
-        </div>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Settings className="h-5 w-5 mr-2" />
-            Gerenciar Categorias
-          </button>
-          <button
-            onClick={handleAddExpense}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            Nova Despesa
-          </button>
-        </div>
-      </div>
+      <ExpenseHeader 
+        onAddExpense={handleAddExpense}
+        onManageCategories={() => setIsCategoryModalOpen(true)}
+      />
 
-      {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Buscar por descrição ou origem..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <button className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter className="h-5 w-5 mr-2" />
-            Filtros
-          </button>
-        </div>
-        
-        <ExpenseFilters 
-          filters={filters}
-          onFiltersChange={setFilters}
-          categorias={categorias}
-        />
-      </div>
+      <ExpenseSearchBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filters={filters}
+        onFiltersChange={setFilters}
+        categorias={categorias}
+      />
 
-      {/* Expenses Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-        <ExpenseTable
-          expenses={filteredExpenses}
-          categorias={categorias}
-          cartoes={cartoes}
-          onEdit={handleEditExpense}
-          onDelete={handleDeleteExpense}
-        />
-      </div>
+      <ExpenseTableContainer
+        expenses={filteredExpenses}
+        categorias={categorias}
+        cartoes={cartoes}
+        onEdit={handleEditExpense}
+        onDelete={handleDeleteExpense}
+      />
 
       {/* Expense Modal */}
       {isModalOpen && (
