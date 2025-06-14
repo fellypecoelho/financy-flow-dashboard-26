@@ -11,6 +11,18 @@ interface DashboardCardsProps {
 }
 
 const DashboardCards = ({ dashboardData, investidores }: DashboardCardsProps) => {
+  const getSaldoVariant = (saldo: number): 'success' | 'danger' => {
+    return saldo >= 0 ? 'success' : 'danger';
+  };
+
+  const getSaldoTrend = (saldo: number) => {
+    return saldo >= 0 ? '+12.5%' : '-5.2%';
+  };
+
+  const getSaldoTrendColor = (saldo: number) => {
+    return saldo >= 0 ? 'text-green-600' : 'text-red-600';
+  };
+
   const cards = [
     {
       title: 'Receitas Totais',
@@ -32,9 +44,9 @@ const DashboardCards = ({ dashboardData, investidores }: DashboardCardsProps) =>
       title: 'Saldo Total',
       value: dashboardData.saldoTotal,
       icon: DollarSign,
-      variant: dashboardData.saldoTotal >= 0 ? 'success' : 'danger' as const,
-      trend: dashboardData.saldoTotal >= 0 ? '+12.5%' : '-5.2%',
-      trendColor: dashboardData.saldoTotal >= 0 ? 'text-green-600' : 'text-red-600'
+      variant: getSaldoVariant(dashboardData.saldoTotal),
+      trend: getSaldoTrend(dashboardData.saldoTotal),
+      trendColor: getSaldoTrendColor(dashboardData.saldoTotal)
     },
     {
       title: 'Investidores Ativos',
