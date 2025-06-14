@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Plus, Calendar, DollarSign, Tag, FileText } from 'lucide-react';
+import { Plus, Calendar, DollarSign, Tag, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { useFeedback } from '@/hooks/useFeedback';
 import CategoryIcon from '@/components/ui/CategoryIcon';
+import ResponsiveValue from '@/components/ui/ResponsiveValue';
 
 const TransactionForm = () => {
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFeedback();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     amount: '',
@@ -38,34 +40,47 @@ const TransactionForm = () => {
     ]
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.title || !formData.amount || !formData.type || !formData.category) {
-      toast({
-        title: "Erro ao salvar",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
+      showError(
+        "Campos obrigatórios", 
+        "Por favor, preencha todos os campos obrigatórios."
+      );
       return;
     }
 
-    console.log('Transaction data:', formData);
-    
-    toast({
-      title: "Transação salva!",
-      description: `${formData.type === 'income' ? 'Receita' : 'Despesa'} de R$ ${formData.amount} adicionada com sucesso.`,
-    });
+    setIsSubmitting(true);
 
-    // Reset form
-    setFormData({
-      title: '',
-      amount: '',
-      type: '',
-      category: '',
-      date: new Date().toISOString().split('T')[0],
-      description: ''
-    });
+    try {
+      // Simular processo de salvamento
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('Transaction data:', formData);
+      
+      showSuccess(
+        "Transação salva com sucesso!",
+        `${formData.type === 'income' ? 'Receita' : 'Despesa'} de R$ ${formData.amount} foi adicionada.`
+      );
+
+      // Reset form
+      setFormData({
+        title: '',
+        amount: '',
+        type: '',
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        description: ''
+      });
+    } catch (error) {
+      showError(
+        "Erro ao salvar",
+        "Ocorreu um erro inesperado. Tente novamente."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -84,13 +99,13 @@ const TransactionForm = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Novo Lançamento</h1>
-        <p className="text-gray-500 mt-1">Registre suas receitas e despesas</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Novo Lançamento</h1>
+        <p className="text-gray-500 mt-1 text-sm sm:text-base">Registre suas receitas e despesas</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
+          <CardTitle className="flex items-center text-lg sm:text-xl">
             <Plus className="mr-2 h-5 w-5" />
             Adicionar Transação
           </CardTitle>
@@ -109,6 +124,7 @@ const TransactionForm = () => {
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 className="w-full"
+                disabled={isSubmitting}
               />
             </div>
 
@@ -127,6 +143,7 @@ const TransactionForm = () => {
                   value={formData.amount}
                   onChange={(e) => handleInputChange('amount', e.target.value)}
                   className="w-full"
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -135,7 +152,11 @@ const TransactionForm = () => {
                   <Tag className="mr-2 h-4 w-4" />
                   Tipo *
                 </Label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                <Select 
+                  value={formData.type} 
+                  onValueChange={(value) => handleInputChange('type', value)}
+                  disabled={isSubmitting}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
@@ -232,7 +253,7 @@ const TransactionForm = () => {
               />
             </div>
 
-            {/* Preview */}
+            {/* Preview com ResponsiveValue */}
             {(formData.title || formData.amount) && (
               <div className="bg-gray-50 rounded-lg p-4 border">
                 <h4 className="font-medium text-gray-900 mb-2">Preview:</h4>
@@ -258,32 +279,50 @@ const TransactionForm = () => {
                       </p>
                     </div>
                   </div>
-                  <span className={`font-semibold ${
-                    formData.type === 'income' ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {formData.type === 'income' ? '+' : formData.type === 'expense' ? '-' : ''}
-                    R$ {formData.amount || '0,00'}
-                  </span>
+                  <ResponsiveValue
+                    value={parseFloat(formData.amount) || 0}
+                    variant={formData.type === 'income' ? 'success' : formData.type === 'expense' ? 'danger' : 'default'}
+                    prefix={formData.type === 'income' ? '+' : formData.type === 'expense' ? '-' : ''}
+                    size="lg"
+                  />
                 </div>
               </div>
             )}
 
             {/* Buttons */}
             <div className="flex gap-3 pt-4">
-              <Button type="submit" className="flex-1">
-                <Plus className="mr-2 h-4 w-4" />
-                Salvar Transação
+              <Button 
+                type="submit" 
+                className="flex-1" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Salvar Transação
+                  </>
+                )}
               </Button>
-              <Button type="button" variant="outline" onClick={() => {
-                setFormData({
-                  title: '',
-                  amount: '',
-                  type: '',
-                  category: '',
-                  date: new Date().toISOString().split('T')[0],
-                  description: ''
-                });
-              }}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                disabled={isSubmitting}
+                onClick={() => {
+                  setFormData({
+                    title: '',
+                    amount: '',
+                    type: '',
+                    category: '',
+                    date: new Date().toISOString().split('T')[0],
+                    description: ''
+                  });
+                }}
+              >
                 Limpar
               </Button>
             </div>

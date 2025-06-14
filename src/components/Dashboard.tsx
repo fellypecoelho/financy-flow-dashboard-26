@@ -6,27 +6,20 @@ import InvestorBalances from './dashboard/InvestorBalances';
 import UpcomingPayments from './dashboard/UpcomingPayments';
 import CategoryChart from './CategoryChart';
 import FinancialChart from './FinancialChart';
+import StatsSkeleton from '@/components/ui/StatsSkeleton';
 
 const Dashboard = () => {
-  const { investidores, categorias, dashboardData, despesas } = useFinancialData();
-
-  if (!dashboardData) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Carregando dados...</div>
-      </div>
-    );
-  }
+  const { investidores, categorias, dashboardData, despesas, isLoading } = useFinancialData();
 
   const proximosVencimentos = despesas.filter(d => d.status === 'pendente').slice(0, 5);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Visão geral do controle financeiro</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">Visão geral do controle financeiro</p>
         </div>
         <div className="flex items-center space-x-4">
           <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
@@ -36,8 +29,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Cards principais */}
-      <DashboardCards dashboardData={dashboardData} investidores={investidores} />
+      {/* Cards principais com skeleton */}
+      {isLoading ? (
+        <StatsSkeleton />
+      ) : (
+        dashboardData && <DashboardCards dashboardData={dashboardData} investidores={investidores} />
+      )}
 
       {/* Segunda linha - Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
