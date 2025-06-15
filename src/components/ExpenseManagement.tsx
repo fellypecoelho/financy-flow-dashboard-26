@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +21,7 @@ const ExpenseManagement = () => {
     valor: '',
     categoria_id: '',
     data_vencimento: '',
-    forma_pagamento: 'pix' as 'pix' | 'cartao' | 'dinheiro' | 'transferencia',
+    forma_pagamento: 'transferencia' as 'transferencia' | 'cartao' | 'dinheiro',
     status: 'pendente' as 'pendente' | 'pago'
   });
 
@@ -47,7 +46,7 @@ const ExpenseManagement = () => {
       valor: '',
       categoria_id: '',
       data_vencimento: '',
-      forma_pagamento: 'pix',
+      forma_pagamento: 'transferencia',
       status: 'pendente'
     });
     setIsCreateModalOpen(false);
@@ -148,10 +147,9 @@ const ExpenseManagement = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pix">PIX</SelectItem>
+                    <SelectItem value="transferencia">Transferência</SelectItem>
                     <SelectItem value="cartao">Cartão</SelectItem>
                     <SelectItem value="dinheiro">Dinheiro</SelectItem>
-                    <SelectItem value="transferencia">Transferência</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
