@@ -19,7 +19,7 @@ export const useFinancialData = () => {
   const currentYear = new Date().getFullYear();
   
   const despesasMes = despesas.filter(despesa => {
-    const despesaDate = new Date(despesa.data_vencimento);
+    const despesaDate = new Date(despesa.dataVencimento);
     return despesaDate.getMonth() === currentMonth && despesaDate.getFullYear() === currentYear;
   });
 
@@ -52,7 +52,7 @@ export const useFinancialData = () => {
     })),
     proximosVencimentos: despesas
       .filter(d => d.status === 'pendente')
-      .sort((a, b) => new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime())
+      .sort((a, b) => new Date(a.dataVencimento).getTime() - new Date(b.dataVencimento).getTime())
       .slice(0, 5), // Próximos 5 vencimentos
     totalReceitas: totalAportesMes,
     totalDespesas: totalDespesasMes,

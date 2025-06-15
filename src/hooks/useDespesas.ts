@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { transformDespesaFromDB } from '@/utils/dataTransforms';
+import { Despesa } from '@/types';
 
 interface DespesaInput {
   descricao: string;
@@ -20,13 +22,6 @@ interface DespesaInput {
   parcela_atual?: number;
 }
 
-interface Despesa extends DespesaInput {
-  id: string;
-  user_id: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
 export const useDespesas = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -38,14 +33,14 @@ export const useDespesas = () => {
     error
   } = useQuery({
     queryKey: ['despesas'],
-    queryFn: async () => {
+    queryFn: async (): Promise<Despesa[]> => {
       const { data, error } = await supabase
         .from('despesas')
         .select('*')
         .order('data_vencimento', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(transformDespesaFromDB);
     },
     enabled: !!user
   });
@@ -81,7 +76,7 @@ export const useDespesas = () => {
   });
 
   const updateDespesa = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Despesa> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: Partial<DespesaInput> & { id: string }) => {
       const { data, error } = await supabase
         .from('despesas')
         .update(updates)
