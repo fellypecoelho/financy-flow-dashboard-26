@@ -1,7 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Edit, Trash2, Palette } from 'lucide-react';
 import { Categoria } from '@/types';
 import CategoryIcon from '@/components/ui/CategoryIcon';
+import { useCategorias } from '@/hooks/useCategorias';
+import { useToast } from '@/hooks/use-toast';
 
 interface CategoryModalProps {
   categorias: Categoria[];
@@ -10,7 +13,8 @@ interface CategoryModalProps {
 }
 
 const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
-  const [localCategorias, setLocalCategorias] = useState<Categoria[]>(categorias);
+  const { createCategoria, updateCategoria, deleteCategoria, isCreating, isUpdating, isDeleting } = useCategorias();
+  const { toast } = useToast();
   const [editingCategory, setEditingCategory] = useState<Categoria | null>(null);
   const [formData, setFormData] = useState({
     nome: '',
@@ -32,27 +36,30 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
     'Briefcase', 'Music', 'Book', 'Laptop', 'Smartphone', 'Headphones'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (editingCategory) {
-      setLocalCategorias(prev => prev.map(cat => 
-        cat.id === editingCategory.id 
-          ? { ...cat, nome: formData.nome, cor: formData.cor, icone: formData.icone }
-          : cat
-      ));
-    } else {
-      const newCategory: Categoria = {
-        id: Date.now().toString(),
-        nome: formData.nome,
-        cor: formData.cor,
-        icone: formData.icone
-      };
-      setLocalCategorias(prev => [...prev, newCategory]);
-    }
+    try {
+      if (editingCategory) {
+        await updateCategoria({
+          id: editingCategory.id,
+          nome: formData.nome,
+          cor: formData.cor,
+          icone: formData.icone
+        });
+      } else {
+        await createCategoria({
+          nome: formData.nome,
+          cor: formData.cor,
+          icone: formData.icone
+        });
+      }
 
-    setFormData({ nome: '', cor: '#3b82f6', icone: 'Tag' });
-    setEditingCategory(null);
+      setFormData({ nome: '', cor: '#3b82f6', icone: 'Tag' });
+      setEditingCategory(null);
+    } catch (error) {
+      console.error('Erro ao salvar categoria:', error);
+    }
   };
 
   const handleEdit = (categoria: Categoria) => {
@@ -64,12 +71,18 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
     });
   };
 
-  const handleDelete = (id: string) => {
-    setLocalCategorias(prev => prev.filter(cat => cat.id !== id));
+  const handleDelete = async (id: string) => {
+    if (confirm('Tem certeza que deseja deletar esta categoria?')) {
+      try {
+        await deleteCategoria(id);
+      } catch (error) {
+        console.error('Erro ao deletar categoria:', error);
+      }
+    }
   };
 
-  const handleSave = () => {
-    onSave(localCategorias);
+  const handleClose = () => {
+    // As categorias já são atualizadas automaticamente pelo hook
     onClose();
   };
 
@@ -78,7 +91,7 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -213,7 +226,8 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 <div className="flex space-x-3">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-sm"
+                    disabled={isCreating || isUpdating}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center shadow-sm disabled:opacity-50"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     {editingCategory ? 'Atualizar' : 'Adicionar'}
@@ -237,11 +251,11 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
             {/* Lista de Categorias */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Categorias Existentes ({localCategorias.length})
+                Categorias Existentes ({categorias.length})
               </h3>
               
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {localCategorias.map(categoria => (
+                {categorias.map(categoria => (
                   <div key={categoria.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center space-x-3">
                       <div 
@@ -259,13 +273,15 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleEdit(categoria)}
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded transition-colors duration-200"
+                        disabled={isUpdating}
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded transition-colors duration-200 disabled:opacity-50"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(categoria.id)}
-                        className="text-red-600 hover:text-red-800 p-1 rounded transition-colors duration-200"
+                        disabled={isDeleting}
+                        className="text-red-600 hover:text-red-800 p-1 rounded transition-colors duration-200 disabled:opacity-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -278,16 +294,10 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
 
           <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-            >
-              Salvar Alterações
+              Fechar
             </button>
           </div>
         </div>

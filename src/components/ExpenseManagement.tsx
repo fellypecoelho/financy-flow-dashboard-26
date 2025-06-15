@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +16,7 @@ const ExpenseManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const { despesas, createDespesa, deleteDespesa, isLoading } = useDespesas();
-  const { categorias, createCategoria, updateCategoria, deleteCategoria } = useCategorias();
+  const { categorias } = useCategorias();
 
   const [formData, setFormData] = useState({
     descricao: '',
@@ -65,10 +64,8 @@ const ExpenseManagement = () => {
     setIsCategoryModalOpen(true);
   };
 
-  const handleSaveCategories = (novasCategorias: any[]) => {
-    // Aqui você pode implementar a lógica para salvar as categorias
-    // Por enquanto, vou apenas fechar o modal
-    console.log('Categorias atualizadas:', novasCategorias);
+  const handleSaveCategories = () => {
+    // As categorias são automaticamente atualizadas pelo hook useCategorias
     setIsCategoryModalOpen(false);
   };
 
