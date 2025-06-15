@@ -8,32 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, Users, DollarSign } from 'lucide-react';
+import { useInvestidores } from '@/hooks/useInvestidores';
 
 const InvestidorManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [investidores, setInvestidores] = useState([
-    {
-      id: '1',
-      nome: 'João Silva',
-      email: 'joao@email.com',
-      saldo_atual: 15000.00,
-      ativo: true
-    },
-    {
-      id: '2',
-      nome: 'Maria Santos',
-      email: 'maria@email.com',
-      saldo_atual: 8500.00,
-      ativo: true
-    },
-    {
-      id: '3',
-      nome: 'Pedro Costa',
-      email: 'pedro@email.com',
-      saldo_atual: 0.00,
-      ativo: false
-    }
-  ]);
+  const { investidores, createInvestidor, deleteInvestidor, updateInvestidor, isLoading } = useInvestidores();
 
   const [formData, setFormData] = useState({
     nome: '',
@@ -43,14 +22,15 @@ const InvestidorManagement = () => {
 
   const handleCreateInvestidor = (e: React.FormEvent) => {
     e.preventDefault();
-    const newInvestidor = {
-      id: Date.now().toString(),
+    
+    const investidorData = {
       nome: formData.nome,
       email: formData.email,
       saldo_atual: parseFloat(formData.saldo_inicial) || 0,
       ativo: true
     };
-    setInvestidores([...investidores, newInvestidor]);
+
+    createInvestidor(investidorData);
     setFormData({
       nome: '',
       email: '',
@@ -61,15 +41,17 @@ const InvestidorManagement = () => {
 
   const handleDeleteInvestidor = (id: string) => {
     if (confirm('Tem certeza que deseja deletar este investidor?')) {
-      setInvestidores(investidores.filter(inv => inv.id !== id));
+      deleteInvestidor(id);
     }
   };
 
-  const handleToggleStatus = (id: string) => {
-    setInvestidores(investidores.map(inv => 
-      inv.id === id ? { ...inv, ativo: !inv.ativo } : inv
-    ));
+  const handleToggleStatus = (id: string, currentStatus: boolean) => {
+    updateInvestidor({ id, ativo: !currentStatus });
   };
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-64">Carregando...</div>;
+  }
 
   const totalInvestidores = investidores.length;
   const investidoresAtivos = investidores.filter(inv => inv.ativo).length;
@@ -202,7 +184,7 @@ const InvestidorManagement = () => {
                     <Badge 
                       variant={investidor.ativo ? 'default' : 'destructive'}
                       className="cursor-pointer"
-                      onClick={() => handleToggleStatus(investidor.id)}
+                      onClick={() => handleToggleStatus(investidor.id, investidor.ativo)}
                     >
                       {investidor.ativo ? 'Ativo' : 'Inativo'}
                     </Badge>

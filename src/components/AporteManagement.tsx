@@ -8,25 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Trash2, TrendingUp } from 'lucide-react';
+import { useAportes } from '@/hooks/useAportes';
+import { useInvestidores } from '@/hooks/useInvestidores';
 
 const AporteManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [aportes, setAportes] = useState([
-    {
-      id: '1',
-      descricao: 'Aporte inicial',
-      valor: 10000.00,
-      investidor: 'João Silva',
-      data: '2024-12-01'
-    },
-    {
-      id: '2',
-      descricao: 'Aporte mensal',
-      valor: 5000.00,
-      investidor: 'Maria Santos',
-      data: '2024-12-15'
-    }
-  ]);
+  const { aportes, createAporte, deleteAporte, isLoading: aportesLoading } = useAportes();
+  const { investidores, isLoading: investidoresLoading } = useInvestidores();
 
   const [formData, setFormData] = useState({
     descricao: '',
@@ -35,22 +23,17 @@ const AporteManagement = () => {
     data: ''
   });
 
-  const investidores = [
-    { id: '1', nome: 'João Silva' },
-    { id: '2', nome: 'Maria Santos' },
-    { id: '3', nome: 'Pedro Costa' }
-  ];
-
   const handleCreateAporte = (e: React.FormEvent) => {
     e.preventDefault();
-    const investidor = investidores.find(inv => inv.id === formData.investidor_id);
-    const newAporte = {
-      id: Date.now().toString(),
-      ...formData,
+    
+    const aporteData = {
+      descricao: formData.descricao,
       valor: parseFloat(formData.valor),
-      investidor: investidor?.nome || ''
+      investidor_id: formData.investidor_id,
+      data: formData.data
     };
-    setAportes([...aportes, newAporte]);
+
+    createAporte(aporteData);
     setFormData({
       descricao: '',
       valor: '',
@@ -62,9 +45,13 @@ const AporteManagement = () => {
 
   const handleDeleteAporte = (id: string) => {
     if (confirm('Tem certeza que deseja deletar este aporte?')) {
-      setAportes(aportes.filter(aporte => aporte.id !== id));
+      deleteAporte(id);
     }
   };
+
+  if (aportesLoading || investidoresLoading) {
+    return <div className="flex justify-center items-center h-64">Carregando...</div>;
+  }
 
   const totalAportes = aportes.reduce((sum, aporte) => sum + aporte.valor, 0);
 
@@ -208,7 +195,7 @@ const AporteManagement = () => {
                 <TableRow key={aporte.id}>
                   <TableCell className="font-medium">{aporte.descricao}</TableCell>
                   <TableCell>R$ {aporte.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                  <TableCell>{aporte.investidor}</TableCell>
+                  <TableCell>{aporte.investidores?.nome || 'Investidor não encontrado'}</TableCell>
                   <TableCell>{new Date(aporte.data).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell className="text-right">
                     <Button

@@ -8,48 +8,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Receipt, Filter } from 'lucide-react';
+import { Plus, Trash2, Receipt } from 'lucide-react';
+import { useDespesas } from '@/hooks/useDespesas';
+import { useCategorias } from '@/hooks/useCategorias';
 
 const ExpenseManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [expenses, setExpenses] = useState([
-    {
-      id: '1',
-      descricao: 'Aluguel',
-      valor: 2500.00,
-      categoria: 'Habitação',
-      data_vencimento: '2024-12-25',
-      status: 'pendente',
-      forma_pagamento: 'pix'
-    },
-    {
-      id: '2',
-      descricao: 'Supermercado',
-      valor: 450.00,
-      categoria: 'Alimentação',
-      data_vencimento: '2024-12-20',
-      status: 'pago',
-      forma_pagamento: 'cartao'
-    }
-  ]);
+  const { despesas, createDespesa, deleteDespesa, isLoading } = useDespesas();
+  const { categorias } = useCategorias();
 
   const [formData, setFormData] = useState({
     descricao: '',
     valor: '',
     categoria_id: '',
     data_vencimento: '',
-    forma_pagamento: 'pix',
-    status: 'pendente'
+    forma_pagamento: 'pix' as 'pix' | 'cartao' | 'dinheiro' | 'transferencia',
+    status: 'pendente' as 'pendente' | 'pago'
   });
 
   const handleCreateExpense = (e: React.FormEvent) => {
     e.preventDefault();
-    const newExpense = {
-      id: Date.now().toString(),
-      ...formData,
+    
+    const despesaData = {
+      descricao: formData.descricao,
+      origem: 'Manual', // Valor padrão
+      categoria_id: formData.categoria_id,
       valor: parseFloat(formData.valor),
+      data_compra: formData.data_vencimento, // Usando mesma data por enquanto
+      data_vencimento: formData.data_vencimento,
+      forma_pagamento: formData.forma_pagamento,
+      status: formData.status,
+      tipo: 'unica' as 'unica'
     };
-    setExpenses([...expenses, newExpense]);
+
+    createDespesa(despesaData);
     setFormData({
       descricao: '',
       valor: '',
@@ -63,12 +55,21 @@ const ExpenseManagement = () => {
 
   const handleDeleteExpense = (id: string) => {
     if (confirm('Tem certeza que deseja deletar esta despesa?')) {
-      setExpenses(expenses.filter(exp => exp.id !== id));
+      deleteDespesa(id);
     }
   };
 
-  const totalPendente = expenses.filter(e => e.status === 'pendente').reduce((sum, e) => sum + e.valor, 0);
-  const totalPago = expenses.filter(e => e.status === 'pago').reduce((sum, e) => sum + e.valor, 0);
+  const totalPendente = despesas.filter(e => e.status === 'pendente').reduce((sum, e) => sum + e.valor, 0);
+  const totalPago = despesas.filter(e => e.status === 'pago').reduce((sum, e) => sum + e.valor, 0);
+
+  const getCategoriaName = (categoriaId: string) => {
+    const categoria = categorias.find(c => c.id === categoriaId);
+    return categoria?.nome || 'Categoria não encontrada';
+  };
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-64">Carregando...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -116,6 +117,21 @@ const ExpenseManagement = () => {
                 />
               </div>
               <div>
+                <Label htmlFor="categoria">Categoria</Label>
+                <Select value={formData.categoria_id} onValueChange={(value) => setFormData({ ...formData, categoria_id: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categorias.map((categoria) => (
+                      <SelectItem key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label htmlFor="data_vencimento">Data de Vencimento</Label>
                 <Input
                   id="data_vencimento"
@@ -127,7 +143,7 @@ const ExpenseManagement = () => {
               </div>
               <div>
                 <Label htmlFor="forma_pagamento">Forma de Pagamento</Label>
-                <Select value={formData.forma_pagamento} onValueChange={(value) => setFormData({ ...formData, forma_pagamento: value })}>
+                <Select value={formData.forma_pagamento} onValueChange={(value) => setFormData({ ...formData, forma_pagamento: value as typeof formData.forma_pagamento })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -209,11 +225,11 @@ const ExpenseManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {expenses.map((expense) => (
+              {despesas.map((expense) => (
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.descricao}</TableCell>
                   <TableCell>R$ {expense.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                  <TableCell>{expense.categoria}</TableCell>
+                  <TableCell>{getCategoriaName(expense.categoria_id)}</TableCell>
                   <TableCell>{new Date(expense.data_vencimento).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell>
                     <Badge variant={expense.status === 'pago' ? 'default' : 'destructive'}>
