@@ -55,6 +55,11 @@ const AporteManagement = () => {
 
   const totalAportes = aportes.reduce((sum, aporte) => sum + aporte.valor, 0);
 
+  const getInvestidorName = (investidorId: string) => {
+    const investidor = investidores.find(inv => inv.id === investidorId);
+    return investidor?.nome || 'Investidor não encontrado';
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -195,7 +200,7 @@ const AporteManagement = () => {
                 <TableRow key={aporte.id}>
                   <TableCell className="font-medium">{aporte.descricao}</TableCell>
                   <TableCell>R$ {aporte.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                  <TableCell>{aporte.investidores?.nome || 'Investidor não encontrado'}</TableCell>
+                  <TableCell>{getInvestidorName(aporte.investidorId)}</TableCell>
                   <TableCell>{new Date(aporte.data).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell className="text-right">
                     <Button

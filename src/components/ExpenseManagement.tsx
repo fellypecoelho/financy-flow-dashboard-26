@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -227,14 +228,14 @@ const ExpenseManagement = () => {
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.descricao}</TableCell>
                   <TableCell>R$ {expense.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                  <TableCell>{getCategoriaName(expense.categoria_id)}</TableCell>
-                  <TableCell>{new Date(expense.data_vencimento).toLocaleDateString('pt-BR')}</TableCell>
+                  <TableCell>{getCategoriaName(expense.categoriaId)}</TableCell>
+                  <TableCell>{new Date(expense.dataVencimento).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell>
                     <Badge variant={expense.status === 'pago' ? 'default' : 'destructive'}>
                       {expense.status === 'pago' ? 'Pago' : 'Pendente'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{expense.forma_pagamento.toUpperCase()}</TableCell>
+                  <TableCell>{expense.formaPagamento.toUpperCase()}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
