@@ -1,6 +1,11 @@
 
+import { CURRENCY_CONFIG } from '@/constants/cartaoConstants';
+
 export const formatCurrency = (valor: number) => {
-  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  return valor.toLocaleString(CURRENCY_CONFIG.LOCALE, { 
+    style: 'currency', 
+    currency: CURRENCY_CONFIG.CURRENCY 
+  });
 };
 
 export const formatPercentage = (value: number) => {
@@ -8,7 +13,7 @@ export const formatPercentage = (value: number) => {
 };
 
 export const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('pt-BR');
+  return new Date(date).toLocaleDateString(CURRENCY_CONFIG.LOCALE);
 };
 
 export const formatCardNumber = () => {
