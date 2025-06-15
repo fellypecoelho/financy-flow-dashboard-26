@@ -16,11 +16,11 @@ const LimiteUtilizadoCard = ({ limiteUtilizado, limiteTotal }: LimiteUtilizadoCa
       <CardContent className="p-3 sm:p-4 lg:p-6">
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1 pr-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">Limite Utilizado</p>
+            <p className="text-xs font-medium text-muted-foreground mb-1">Limite Utilizado</p>
             <p className="text-base sm:text-lg lg:text-2xl font-bold text-orange-600 leading-tight">
               {limiteUtilizado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {percentualUtilizado}% do limite total
             </p>
           </div>

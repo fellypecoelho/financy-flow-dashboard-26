@@ -13,7 +13,7 @@ const CartoesAtivosCard = ({ cartoesAtivos }: CartoesAtivosCardProps) => {
       <CardContent className="p-3 sm:p-4 lg:p-6">
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1 pr-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">Cartões Ativos</p>
+            <p className="text-xs font-medium text-muted-foreground mb-1">Cartões Ativos</p>
             <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">{cartoesAtivos}</p>
             <p className="text-xs text-green-600 mt-1">Todos funcionais</p>
           </div>

@@ -1,8 +1,11 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, Users, TrendingUp, DollarSign } from 'lucide-react';
+import { Plus, Search, Users, TrendingUp, DollarSign } from 'lucide-react';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { Investidor } from '@/types';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import InvestidorModal from './investidores/InvestidorModal';
 import InvestidorTable from './investidores/InvestidorTable';
 import InvestidorStats from './investidores/InvestidorStats';
@@ -63,91 +66,98 @@ const InvestidorManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Investidores</h1>
-          <p className="text-gray-500 mt-1">Controle todos os investidores e seus aportes</p>
+          <h1 className="text-3xl font-bold text-foreground">Gerenciamento de Investidores</h1>
+          <p className="text-muted-foreground mt-1">Controle todos os investidores e seus aportes</p>
         </div>
-        <button
-          onClick={handleAddInvestidor}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
+        <Button onClick={handleAddInvestidor} className="flex items-center">
           <Plus className="h-5 w-5 mr-2" />
           Novo Investidor
-        </button>
+        </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total de Investidores</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalInvestidores}</p>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total de Investidores</p>
+                <p className="text-2xl font-bold text-foreground">{stats.totalInvestidores}</p>
+              </div>
+              <Users className="h-8 w-8 text-primary" />
             </div>
-            <Users className="h-8 w-8 text-blue-600" />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Investidores Ativos</p>
-              <p className="text-2xl font-bold text-green-600">{stats.investidoresAtivos}</p>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Investidores Ativos</p>
+                <p className="text-2xl font-bold text-green-600">{stats.investidoresAtivos}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-green-600" />
             </div>
-            <TrendingUp className="h-8 w-8 text-green-600" />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total de Aportes</p>
-              <p className="text-2xl font-bold text-purple-600">
-                {stats.totalAportes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </p>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total de Aportes</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {stats.totalAportes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </p>
+              </div>
+              <DollarSign className="h-8 w-8 text-purple-600" />
             </div>
-            <DollarSign className="h-8 w-8 text-purple-600" />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Saldo Total</p>
-              <p className="text-2xl font-bold text-orange-600">
-                {stats.saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </p>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Saldo Total</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {stats.saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </p>
+              </div>
+              <DollarSign className="h-8 w-8 text-orange-600" />
             </div>
-            <DollarSign className="h-8 w-8 text-orange-600" />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Estatísticas detalhadas */}
       <InvestidorStats investidores={investidores} aportes={aportes} />
 
       {/* Search */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="text"
-            placeholder="Buscar por nome ou email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+            <Input
+              type="text"
+              placeholder="Buscar por nome ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Investidores Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+      <Card>
         <InvestidorTable
           investidores={filteredInvestidores}
           aportes={aportes}
           onEdit={handleEditInvestidor}
           onDelete={handleDeleteInvestidor}
         />
-      </div>
+      </Card>
 
       {/* Modal */}
       {isModalOpen && (

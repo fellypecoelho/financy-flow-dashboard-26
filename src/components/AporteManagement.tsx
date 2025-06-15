@@ -1,8 +1,11 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Edit, Trash2, TrendingUp } from 'lucide-react';
+import { Plus, Search, Filter, TrendingUp } from 'lucide-react';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { Aporte } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import AporteModal from './aportes/AporteModal';
 import AporteFilters from './aportes/AporteFilters';
 import AporteTable from './aportes/AporteTable';
@@ -59,72 +62,73 @@ const AporteManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Aportes</h1>
-          <p className="text-gray-500 mt-1">Controle todos os aportes dos investidores</p>
+          <h1 className="text-3xl font-bold text-foreground">Gerenciamento de Aportes</h1>
+          <p className="text-muted-foreground mt-1">Controle todos os aportes dos investidores</p>
         </div>
-        <button
-          onClick={handleAddAporte}
-          className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
+        <Button onClick={handleAddAporte} className="flex items-center">
           <Plus className="h-5 w-5 mr-2" />
           Novo Aporte
-        </button>
+        </Button>
       </div>
 
       {/* Stats Card */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center">
-              <TrendingUp className="h-5 w-5 text-green-600 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-900">Total de Aportes</h3>
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center">
+                <TrendingUp className="h-5 w-5 text-green-600 mr-2" />
+                <h3 className="text-lg font-semibold text-foreground">Total de Aportes</h3>
+              </div>
+              <p className="text-3xl font-bold text-green-600 mt-2">
+                {totalAportes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </p>
             </div>
-            <p className="text-3xl font-bold text-green-600 mt-2">
-              {totalAportes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </p>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Quantidade de aportes</p>
+              <p className="text-2xl font-bold text-foreground">{filteredAportes.length}</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">Quantidade de aportes</p>
-            <p className="text-2xl font-bold text-gray-900">{filteredAportes.length}</p>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Buscar por descrição ou investidor..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                type="text"
+                placeholder="Buscar por descrição ou investidor..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline" className="flex items-center">
+              <Filter className="h-5 w-5 mr-2" />
+              Filtros
+            </Button>
           </div>
-          <button className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter className="h-5 w-5 mr-2" />
-            Filtros
-          </button>
-        </div>
-        
-        <AporteFilters 
-          filters={filters}
-          onFiltersChange={setFilters}
-          investidores={investidores}
-        />
-      </div>
+          
+          <AporteFilters 
+            filters={filters}
+            onFiltersChange={setFilters}
+            investidores={investidores}
+          />
+        </CardContent>
+      </Card>
 
       {/* Aportes Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+      <Card>
         <AporteTable
           aportes={filteredAportes}
           investidores={investidores}
           onEdit={handleEditAporte}
           onDelete={handleDeleteAporte}
         />
-      </div>
+      </Card>
 
       {/* Modal */}
       {isModalOpen && (

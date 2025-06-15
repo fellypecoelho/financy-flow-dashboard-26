@@ -19,7 +19,7 @@ const TransacoesRecentesCard = ({ despesas }: TransacoesRecentesCardProps) => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Transações Recentes</CardTitle>
-          <Button variant="ghost" size="sm" className="text-blue-600">
+          <Button variant="ghost" size="sm" className="text-primary">
             Ver Todas
           </Button>
         </div>
@@ -29,15 +29,15 @@ const TransacoesRecentesCard = ({ despesas }: TransacoesRecentesCardProps) => {
           {despesasCartao.map((despesa) => (
             <div key={despesa.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <CreditCard className="h-4 w-4 text-blue-600" />
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <CreditCard className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{despesa.descricao}</p>
-                  <p className="text-sm text-gray-500">{despesa.origem}</p>
+                  <p className="font-medium text-foreground">{despesa.descricao}</p>
+                  <p className="text-sm text-muted-foreground">{despesa.origem}</p>
                 </div>
               </div>
-              <span className="font-semibold text-red-600">
+              <span className="font-semibold text-destructive">
                 -{despesa.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </span>
             </div>
