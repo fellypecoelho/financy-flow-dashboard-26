@@ -21,7 +21,9 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
 
   const cores = [
     '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', 
-    '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f59e0b'
+    '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f59e0b',
+    '#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#2563eb',
+    '#7c3aed', '#db2777', '#0891b2', '#65a30d', '#d97706'
   ];
 
   const icones = [
@@ -88,7 +90,7 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 {editingCategory ? 'Editar Categoria' : 'Nova Categoria'}
               </h3>
               
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
                   <input
@@ -102,38 +104,68 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Cor</label>
-                  <div className="grid grid-cols-5 gap-2">
-                    {cores.map(cor => (
-                      <button
-                        key={cor}
-                        type="button"
-                        onClick={() => setFormData({...formData, cor})}
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          formData.cor === cor ? 'border-gray-900' : 'border-gray-300'
-                        }`}
-                        style={{ backgroundColor: cor }}
-                      />
-                    ))}
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Cor</label>
+                  
+                  {/* Cores predefinidas */}
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-500 mb-2">Cores predefinidas</p>
+                    <div className="grid grid-cols-10 gap-2">
+                      {cores.map(cor => (
+                        <button
+                          key={cor}
+                          type="button"
+                          onClick={() => setFormData({...formData, cor})}
+                          className={`w-8 h-8 rounded-lg border-2 transition-all duration-200 hover:scale-110 shadow-sm ${
+                            formData.cor === cor 
+                              ? 'border-gray-900 ring-2 ring-blue-500 ring-offset-1' 
+                              : 'border-gray-200 hover:border-gray-400'
+                          }`}
+                          style={{ backgroundColor: cor }}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <input
-                    type="color"
-                    value={formData.cor}
-                    onChange={(e) => setFormData({...formData, cor: e.target.value})}
-                    className="mt-2 w-full h-8 rounded border border-gray-300"
-                  />
+
+                  {/* Seletor de cor customizada */}
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-500">Cor personalizada</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <input
+                          type="color"
+                          value={formData.cor}
+                          onChange={(e) => setFormData({...formData, cor: e.target.value})}
+                          className="w-12 h-12 rounded-lg border-2 border-gray-200 cursor-pointer"
+                          style={{ backgroundColor: formData.cor }}
+                        />
+                        <Palette className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-5 w-5 text-white pointer-events-none" />
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={formData.cor}
+                          onChange={(e) => setFormData({...formData, cor: e.target.value})}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                          placeholder="#3b82f6"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Ícone</label>
-                  <div className="flex items-center space-x-3 mb-2">
+                  <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
                     <div 
-                      className="w-8 h-8 rounded-lg flex items-center justify-center"
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm"
                       style={{ backgroundColor: formData.cor }}
                     >
-                      <CategoryIcon iconName={formData.icone} size={16} className="text-white" />
+                      <CategoryIcon iconName={formData.icone} size={18} className="text-white" />
                     </div>
-                    <span className="text-sm text-gray-600">Prévia do ícone</span>
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">Prévia do ícone</span>
+                      <p className="text-xs text-gray-500">Como ficará na categoria</p>
+                    </div>
                   </div>
                   <select
                     value={formData.icone}
@@ -149,9 +181,9 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                 <div className="flex space-x-3">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
                   >
-                    <Plus className="h-4 w-4 mr-2 inline" />
+                    <Plus className="h-4 w-4 mr-2" />
                     {editingCategory ? 'Atualizar' : 'Adicionar'}
                   </button>
                   {editingCategory && (
@@ -161,7 +193,7 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                         setEditingCategory(null);
                         setFormData({ nome: '', cor: '#3b82f6', icone: 'Tag' });
                       }}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                     >
                       Cancelar
                     </button>
@@ -178,15 +210,15 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
               
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {localCategorias.map(categoria => (
-                  <div key={categoria.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <div key={categoria.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center space-x-3">
                       <div 
-                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm"
                         style={{ backgroundColor: categoria.cor }}
                       >
                         <CategoryIcon 
                           iconName={categoria.icone} 
-                          size={16} 
+                          size={18} 
                           className="text-white" 
                         />
                       </div>
@@ -195,13 +227,13 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleEdit(categoria)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded transition-colors duration-200"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(categoria.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-red-600 hover:text-red-800 p-1 rounded transition-colors duration-200"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -215,13 +247,13 @@ const CategoryModal = ({ categorias, onSave, onClose }: CategoryModalProps) => {
           <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
               Salvar Alterações
             </button>
