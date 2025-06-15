@@ -8,14 +8,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Receipt } from 'lucide-react';
+import { Plus, Trash2, Receipt, Settings } from 'lucide-react';
 import { useDespesas } from '@/hooks/useDespesas';
 import { useCategorias } from '@/hooks/useCategorias';
+import CategoryModal from '@/components/expenses/CategoryModal';
 
 const ExpenseManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const { despesas, createDespesa, deleteDespesa, isLoading } = useDespesas();
-  const { categorias } = useCategorias();
+  const { categorias, createCategoria, updateCategoria, deleteCategoria } = useCategorias();
 
   const [formData, setFormData] = useState({
     descricao: '',
@@ -59,6 +61,17 @@ const ExpenseManagement = () => {
     }
   };
 
+  const handleManageCategories = () => {
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleSaveCategories = (novasCategorias: any[]) => {
+    // Aqui você pode implementar a lógica para salvar as categorias
+    // Por enquanto, vou apenas fechar o modal
+    console.log('Categorias atualizadas:', novasCategorias);
+    setIsCategoryModalOpen(false);
+  };
+
   const totalPendente = despesas.filter(e => e.status === 'pendente').reduce((sum, e) => sum + e.valor, 0);
   const totalPago = despesas.filter(e => e.status === 'pago').reduce((sum, e) => sum + e.valor, 0);
 
@@ -81,90 +94,97 @@ const ExpenseManagement = () => {
           </p>
         </div>
         
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Despesa
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Nova Despesa</DialogTitle>
-              <DialogDescription>
-                Adicione uma nova despesa ao sistema
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleCreateExpense} className="space-y-4">
-              <div>
-                <Label htmlFor="descricao">Descrição</Label>
-                <Input
-                  id="descricao"
-                  value={formData.descricao}
-                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="valor">Valor</Label>
-                <Input
-                  id="valor"
-                  type="number"
-                  step="0.01"
-                  value={formData.valor}
-                  onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="categoria">Categoria</Label>
-                <Select value={formData.categoria_id} onValueChange={(value) => setFormData({ ...formData, categoria_id: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categorias.map((categoria) => (
-                      <SelectItem key={categoria.id} value={categoria.id}>
-                        {categoria.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="data_vencimento">Data de Vencimento</Label>
-                <Input
-                  id="data_vencimento"
-                  type="date"
-                  value={formData.data_vencimento}
-                  onChange={(e) => setFormData({ ...formData, data_vencimento: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="forma_pagamento">Forma de Pagamento</Label>
-                <Select value={formData.forma_pagamento} onValueChange={(value) => setFormData({ ...formData, forma_pagamento: value as typeof formData.forma_pagamento })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="transferencia">Transferência</SelectItem>
-                    <SelectItem value="cartao">Cartão</SelectItem>
-                    <SelectItem value="dinheiro">Dinheiro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  Criar Despesa
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleManageCategories}>
+            <Settings className="mr-2 h-4 w-4" />
+            Gerenciar Categorias
+          </Button>
+          
+          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Nova Despesa
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Criar Nova Despesa</DialogTitle>
+                <DialogDescription>
+                  Adicione uma nova despesa ao sistema
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleCreateExpense} className="space-y-4">
+                <div>
+                  <Label htmlFor="descricao">Descrição</Label>
+                  <Input
+                    id="descricao"
+                    value={formData.descricao}
+                    onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="valor">Valor</Label>
+                  <Input
+                    id="valor"
+                    type="number"
+                    step="0.01"
+                    value={formData.valor}
+                    onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="categoria">Categoria</Label>
+                  <Select value={formData.categoria_id} onValueChange={(value) => setFormData({ ...formData, categoria_id: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categorias.map((categoria) => (
+                        <SelectItem key={categoria.id} value={categoria.id}>
+                          {categoria.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="data_vencimento">Data de Vencimento</Label>
+                  <Input
+                    id="data_vencimento"
+                    type="date"
+                    value={formData.data_vencimento}
+                    onChange={(e) => setFormData({ ...formData, data_vencimento: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="forma_pagamento">Forma de Pagamento</Label>
+                  <Select value={formData.forma_pagamento} onValueChange={(value) => setFormData({ ...formData, forma_pagamento: value as typeof formData.forma_pagamento })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="transferencia">Transferência</SelectItem>
+                      <SelectItem value="cartao">Cartão</SelectItem>
+                      <SelectItem value="dinheiro">Dinheiro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit">
+                    Criar Despesa
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -252,6 +272,15 @@ const ExpenseManagement = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Modal de Gerenciamento de Categorias */}
+      {isCategoryModalOpen && (
+        <CategoryModal
+          categorias={categorias}
+          onSave={handleSaveCategories}
+          onClose={() => setIsCategoryModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
