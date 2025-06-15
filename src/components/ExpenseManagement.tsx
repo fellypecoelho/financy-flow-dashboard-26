@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useFinancialData } from '@/hooks/useFinancialData';
+import { useCategorias } from '@/hooks/useCategorias';
 import { useExpenseFilters } from '@/hooks/useExpenseFilters';
 import { Despesa } from '@/types';
 import ExpenseModal from './expenses/ExpenseModal';
@@ -10,7 +11,8 @@ import ExpenseSearchBar from './expenses/ExpenseSearchBar';
 import ExpenseTableContainer from './expenses/ExpenseTableContainer';
 
 const ExpenseManagement = () => {
-  const { despesas, categorias, cartoes, investidores, setDespesas, setCategorias } = useFinancialData();
+  const { despesas, cartoes, investidores, setDespesas } = useFinancialData();
+  const { categorias } = useCategorias();
   const { searchTerm, setSearchTerm, filters, setFilters, filteredExpenses } = useExpenseFilters(despesas);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -78,7 +80,7 @@ const ExpenseManagement = () => {
       {isCategoryModalOpen && (
         <CategoryModal
           categorias={categorias}
-          onSave={setCategorias}
+          onSave={() => {}} // Será implementado quando migrarmos categorias completamente
           onClose={() => setIsCategoryModalOpen(false)}
         />
       )}

@@ -2,6 +2,7 @@
 import { useInvestidores } from './useInvestidores';
 import { useCategorias } from './useCategorias';
 import { DashboardData } from '@/types';
+import { useState } from 'react';
 
 // Hook simplificado que agrega os outros hooks
 export const useFinancialData = () => {
@@ -9,9 +10,9 @@ export const useFinancialData = () => {
   const { categorias, isLoading: categoriasLoading } = useCategorias();
 
   // Dados temporários até migrarmos completamente
-  const mockCartoes = [];
-  const mockDespesas = [];
-  const mockAportes = [];
+  const [cartoes, setCartoes] = useState([]);
+  const [despesas, setDespesas] = useState([]);
+  const [aportes, setAportes] = useState([]);
   
   const isLoading = investidoresLoading || categoriasLoading;
 
@@ -39,10 +40,15 @@ export const useFinancialData = () => {
   return {
     investidores,
     categorias,
-    cartoes: mockCartoes,
-    despesas: mockDespesas,
-    aportes: mockAportes,
+    cartoes,
+    despesas,
+    aportes,
     dashboardData,
-    isLoading
+    isLoading,
+    // Funções setter necessárias para os componentes
+    setCartoes,
+    setDespesas,
+    setAportes,
+    setCategorias: () => {}, // Placeholder, será removido quando migrarmos categorias
   };
 };
