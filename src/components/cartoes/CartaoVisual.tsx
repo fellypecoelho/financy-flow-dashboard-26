@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { CreditCard } from 'lucide-react';
 import { Cartao } from '@/types';
-import { getBandeiraGradient, formatCardNumber } from '@/utils/cartaoUtils';
+import { getBandeiraGradient, formatCardNumber, formatLimit } from '@/utils/cartaoUtils';
 
 interface CartaoVisualProps {
   cartao: Cartao;
@@ -10,7 +10,9 @@ interface CartaoVisualProps {
   percentualUtilizado: number;
 }
 
-const CartaoVisual = ({ cartao, limiteUtilizado, percentualUtilizado }: CartaoVisualProps) => {
+const CartaoVisual = memo(({ cartao, limiteUtilizado, percentualUtilizado }: CartaoVisualProps) => {
+  const limiteDisponivel = cartao.limite - limiteUtilizado;
+  
   return (
     <div className={`bg-gradient-to-br ${getBandeiraGradient(cartao.bandeira)} p-6 text-white relative`}>
       <div className="flex justify-between items-start mb-8">
@@ -30,15 +32,11 @@ const CartaoVisual = ({ cartao, limiteUtilizado, percentualUtilizado }: CartaoVi
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
             <p className="text-xs opacity-60">Limite</p>
-            <p className="font-semibold">
-              {cartao.limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </p>
+            <p className="font-semibold">{formatLimit(cartao.limite)}</p>
           </div>
           <div>
             <p className="text-xs opacity-60">Disponível</p>
-            <p className="font-semibold">
-              {(cartao.limite - limiteUtilizado).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </p>
+            <p className="font-semibold">{formatLimit(limiteDisponivel)}</p>
           </div>
           <div>
             <p className="text-xs opacity-60">Fatura</p>
@@ -65,6 +63,8 @@ const CartaoVisual = ({ cartao, limiteUtilizado, percentualUtilizado }: CartaoVi
       </div>
     </div>
   );
-};
+});
+
+CartaoVisual.displayName = 'CartaoVisual';
 
 export default CartaoVisual;

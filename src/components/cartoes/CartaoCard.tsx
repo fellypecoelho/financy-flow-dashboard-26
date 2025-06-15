@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Cartao, Investidor } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFinancialData } from '@/hooks/useFinancialData';
@@ -14,7 +14,7 @@ interface CartaoCardProps {
   onDelete: (id: string) => void;
 }
 
-const CartaoCard = ({ cartao, investidores, onEdit, onDelete }: CartaoCardProps) => {
+const CartaoCard = memo(({ cartao, investidores, onEdit, onDelete }: CartaoCardProps) => {
   const { despesas } = useFinancialData();
   const calculation = useCartaoCalculation(cartao.id, [cartao], despesas);
 
@@ -39,6 +39,8 @@ const CartaoCard = ({ cartao, investidores, onEdit, onDelete }: CartaoCardProps)
       </CardContent>
     </Card>
   );
-};
+});
+
+CartaoCard.displayName = 'CartaoCard';
 
 export default CartaoCard;

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Cartao, Despesa } from '@/types';
 import { useCartaoCalculations } from '@/hooks/useCartaoCalculations';
 import LimiteTotalCard from './stats/LimiteTotalCard';
@@ -12,7 +12,7 @@ interface CartaoStatsProps {
   despesas: Despesa[];
 }
 
-const CartaoStats = ({ cartoes, despesas }: CartaoStatsProps) => {
+const CartaoStats = memo(({ cartoes, despesas }: CartaoStatsProps) => {
   const { 
     limiteTotal, 
     limiteUtilizado, 
@@ -28,6 +28,8 @@ const CartaoStats = ({ cartoes, despesas }: CartaoStatsProps) => {
       <CartoesAtivosCard cartoesAtivos={cartoesAtivos} />
     </div>
   );
-};
+});
+
+CartaoStats.displayName = 'CartaoStats';
 
 export default CartaoStats;
