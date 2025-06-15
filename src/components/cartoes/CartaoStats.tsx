@@ -7,7 +7,7 @@ import LimiteUtilizadoCard from './stats/LimiteUtilizadoCard';
 import ProximaFaturaCard from './stats/ProximaFaturaCard';
 import CartoesAtivosCard from './stats/CartoesAtivosCard';
 
-const CartaoStats = memo(({ cartoes, despesas }: CartaoStatsProps) => {
+const CartaoStats: React.FC<CartaoStatsProps> = memo(({ cartoes, despesas }) => {
   const { 
     limiteTotal, 
     limiteUtilizado, 

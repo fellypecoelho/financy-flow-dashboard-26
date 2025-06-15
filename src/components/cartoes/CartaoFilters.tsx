@@ -2,7 +2,7 @@
 import React from 'react';
 import { CartaoFiltersProps } from '@/types/cartao';
 
-const CartaoFilters = ({ filters, onFiltersChange, investidores }: CartaoFiltersProps) => {
+const CartaoFilters: React.FC<CartaoFiltersProps> = ({ filters, onFiltersChange, investidores }) => {
   const handleFilterChange = (key: string, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };

@@ -4,7 +4,7 @@ import { CreditCard } from 'lucide-react';
 import { CartaoVisualProps } from '@/types/cartao';
 import { getBandeiraGradient, formatCardNumber, formatLimit } from '@/utils/cartaoUtils';
 
-const CartaoVisual = memo(({ cartao, limiteUtilizado, percentualUtilizado }: CartaoVisualProps) => {
+const CartaoVisual: React.FC<CartaoVisualProps> = memo(({ cartao, limiteUtilizado, percentualUtilizado }) => {
   const limiteDisponivel = cartao.limite - limiteUtilizado;
   
   return (

@@ -7,7 +7,7 @@ import { CartaoCardProps } from '@/types/cartao';
 import CartaoVisual from './CartaoVisual';
 import CartaoInfo from './CartaoInfo';
 
-const CartaoCard = memo(({ cartao, investidores, onEdit, onDelete }: CartaoCardProps) => {
+const CartaoCard: React.FC<CartaoCardProps> = memo(({ cartao, investidores, onEdit, onDelete }) => {
   const { despesas } = useFinancialData();
   const calculation = useCartaoCalculation(cartao.id, [cartao], despesas);
 

@@ -4,7 +4,7 @@ import { Edit, Trash2 } from 'lucide-react';
 import { CartaoInfoProps } from '@/types/cartao';
 import { getInvestidorNome, getInvestidorInitials } from '@/utils/investidorUtils';
 
-const CartaoInfo = ({ cartao, investidores, onEdit, onDelete }: CartaoInfoProps) => {
+const CartaoInfo: React.FC<CartaoInfoProps> = ({ cartao, investidores, onEdit, onDelete }) => {
   return (
     <div className="p-4 bg-gray-50">
       <div className="flex items-center justify-between mb-3">
