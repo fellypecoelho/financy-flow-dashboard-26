@@ -11,9 +11,17 @@ const CartaoCard: React.FC<CartaoCardProps> = memo(({ cartao, investidores, onEd
   const { despesas } = useFinancialData();
   const calculation = useCartaoCalculation(cartao.id, [cartao], despesas);
 
-  if (!calculation) return null;
+  // Se não conseguir calcular, usar valores padrão para evitar crash
+  const utilizado = calculation?.utilizado || 0;
+  const percentualUtilizado = calculation?.percentualUtilizado || 0;
 
-  const { utilizado, percentualUtilizado } = calculation;
+  console.log('CartaoCard rendering:', {
+    cartaoId: cartao.id,
+    cartaoNome: cartao.nome,
+    calculation,
+    utilizado,
+    percentualUtilizado
+  });
 
   return (
     <Card className="overflow-hidden">

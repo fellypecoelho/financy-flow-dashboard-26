@@ -5,6 +5,8 @@ import { CartaoCalculations, CartaoCalculation } from '@/types/cartao';
 
 export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]): CartaoCalculations => {
   const calculations = useMemo(() => {
+    console.log('useCartaoCalculations - cartoes:', cartoes.length, 'despesas:', despesas.length);
+    
     const limiteTotal = cartoes.reduce((acc, cartao) => acc + cartao.limite, 0);
     
     const limiteUtilizado = despesas
@@ -37,7 +39,7 @@ export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]): C
       return acc;
     }, {} as Record<string, { utilizado: number; percentualUtilizado: number; disponivel: number }>);
 
-    return {
+    const result = {
       limiteTotal,
       limiteUtilizado,
       proximaFatura,
@@ -45,6 +47,9 @@ export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]): C
       percentualUtilizadoGeral,
       calculosPorCartao
     };
+
+    console.log('useCartaoCalculations - result:', result);
+    return result;
   }, [cartoes, despesas]);
 
   return calculations;
@@ -52,8 +57,13 @@ export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]): C
 
 export const useCartaoCalculation = (cartaoId: string, cartoes: Cartao[], despesas: Despesa[]): CartaoCalculation | null => {
   return useMemo(() => {
+    console.log('useCartaoCalculation - cartaoId:', cartaoId, 'cartoes:', cartoes.length);
+    
     const cartao = cartoes.find(c => c.id === cartaoId);
-    if (!cartao) return null;
+    if (!cartao) {
+      console.log('useCartaoCalculation - cartão não encontrado:', cartaoId);
+      return null;
+    }
 
     const utilizado = despesas
       .filter(d => d.formaPagamento === 'cartao' && d.cartaoId === cartaoId)
@@ -62,11 +72,14 @@ export const useCartaoCalculation = (cartaoId: string, cartoes: Cartao[], despes
     const percentualUtilizado = cartao.limite > 0 ? (utilizado / cartao.limite) * 100 : 0;
     const disponivel = cartao.limite - utilizado;
 
-    return {
+    const result = {
       cartao,
       utilizado,
       percentualUtilizado,
       disponivel
     };
+
+    console.log('useCartaoCalculation - result:', result);
+    return result;
   }, [cartaoId, cartoes, despesas]);
 };

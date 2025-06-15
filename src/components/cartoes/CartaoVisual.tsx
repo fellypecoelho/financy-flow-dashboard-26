@@ -2,10 +2,15 @@
 import React, { memo } from 'react';
 import { CreditCard } from 'lucide-react';
 import { CartaoVisualProps } from '@/types/cartao';
-import { getBandeiraGradient, formatCardNumber, formatLimit } from '@/utils/cartaoUtils';
+import { getBandeiraGradient, formatLimit } from '@/utils/cartaoUtils';
 
 const CartaoVisual: React.FC<CartaoVisualProps> = memo(({ cartao, limiteUtilizado, percentualUtilizado }) => {
   const limiteDisponivel = cartao.limite - limiteUtilizado;
+  
+  // Função para formatar número do cartão (mock)
+  const formatCardNumber = () => {
+    return "**** **** **** 1234";
+  };
   
   return (
     <div className={`bg-gradient-to-br ${getBandeiraGradient(cartao.bandeira)} p-6 text-white relative`}>
@@ -47,7 +52,7 @@ const CartaoVisual: React.FC<CartaoVisualProps> = memo(({ cartao, limiteUtilizad
           <div className="w-full bg-white bg-opacity-20 rounded-full h-2">
             <div 
               className="bg-white h-2 rounded-full transition-all duration-300"
-              style={{ width: `${percentualUtilizado}%` }}
+              style={{ width: `${Math.min(percentualUtilizado, 100)}%` }}
             ></div>
           </div>
           <p className="text-xs mt-1 opacity-80">
