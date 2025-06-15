@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import Layout from '@/components/Layout';
 import Dashboard from '@/components/Dashboard';
 import ExpenseManagement from '@/components/ExpenseManagement';
@@ -9,11 +10,17 @@ import CartaoManagement from '@/components/CartaoManagement';
 import CalendarioFinanceiro from '@/components/CalendarioFinanceiro';
 import RelatoriosFinanceiros from '@/components/RelatoriosFinanceiros';
 import Configuracoes from '@/components/Configuracoes';
+import UserManagement from '@/components/users/UserManagement';
 
 const Index = () => {
+  const { loading } = useAuth();
   const [currentPage, setCurrentPage] = useState('dashboard');
 
-  const renderPage = () => {
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
+
+  const renderCurrentPage = () => {
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard />;
@@ -31,6 +38,8 @@ const Index = () => {
         return <RelatoriosFinanceiros />;
       case 'configuracoes':
         return <Configuracoes />;
+      case 'usuarios':
+        return <UserManagement />;
       default:
         return <Dashboard />;
     }
@@ -38,7 +47,7 @@ const Index = () => {
 
   return (
     <Layout currentPage={currentPage} onPageChange={setCurrentPage}>
-      {renderPage()}
+      {renderCurrentPage()}
     </Layout>
   );
 };
