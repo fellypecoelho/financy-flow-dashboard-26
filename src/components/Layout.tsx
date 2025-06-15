@@ -1,18 +1,18 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   LayoutDashboard, 
-  CreditCard, 
+  Receipt, 
   TrendingUp, 
+  Users, 
+  CreditCard, 
   Calendar,
   BarChart3,
   Settings,
-  Menu,
-  X,
-  Wallet,
-  Users
+  LogOut
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,91 +21,75 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, currentPage, onPageChange }: LayoutProps) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { signOut, user } = useAuth();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'despesas', label: 'Despesas', icon: CreditCard },
+    { id: 'despesas', label: 'Despesas', icon: Receipt },
     { id: 'aportes', label: 'Aportes', icon: TrendingUp },
     { id: 'investidores', label: 'Investidores', icon: Users },
-    { id: 'cartoes', label: 'Cartões', icon: Wallet },
+    { id: 'cartoes', label: 'Cartões', icon: CreditCard },
     { id: 'calendario', label: 'Calendário', icon: Calendar },
     { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
     { id: 'configuracoes', label: 'Configurações', icon: Settings },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 bg-card rounded-lg shadow-md border border-border"
-        >
-          {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
+    <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-card shadow-xl border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
+      <div className="w-64 bg-card border-r border-border flex flex-col">
         <div className="p-6 border-b border-border">
-          <h1 className="text-xl font-semibold text-foreground">
-            FinanceControl
+          <h1 className="text-2xl font-bold text-foreground">
+            Finanças
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Sistema Financeiro</p>
+          {user && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {user.email}
+            </p>
+          )}
         </div>
-
-        <nav className="mt-6">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onPageChange(item.id);
-                  setSidebarOpen(false);
-                }}
-                className={cn(
-                  "w-full flex items-center px-6 py-3 text-left hover:bg-accent transition-colors border-r-3 border-transparent",
-                  currentPage === item.id
-                    ? "border-r-primary bg-accent text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Icon size={20} className="mr-3" />
-                {item.label}
-              </button>
-            );
-          })}
+        
+        <nav className="flex-1 p-4">
+          <ul className="space-y-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.id}>
+                  <button
+                    onClick={() => onPageChange(item.id)}
+                    className={`w-full flex items-center px-4 py-2 text-left rounded-lg transition-colors ${
+                      currentPage === item.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                    }`}
+                  >
+                    <Icon className="mr-3 h-5 w-5" />
+                    {item.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         </nav>
 
-        <div className="absolute bottom-6 left-6 right-6">
-          <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-4 text-primary-foreground">
-            <p className="text-sm font-medium">Sistema Multi-investidor</p>
-            <p className="text-xs opacity-90">Controle financeiro avançado</p>
-          </div>
+        <div className="p-4 border-t border-border">
+          <Button
+            onClick={signOut}
+            variant="outline"
+            className="w-full"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sair
+          </Button>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="lg:ml-64">
-        <main className="p-6 pt-16 lg:pt-6">
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-6">
           {children}
-        </main>
+        </div>
       </div>
-
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 };
