@@ -11,6 +11,7 @@ import { Plus, Trash2, Receipt, Settings } from 'lucide-react';
 import { useDespesas } from '@/hooks/useDespesas';
 import { useCategorias } from '@/hooks/useCategorias';
 import CategoryModal from '@/components/expenses/CategoryModal';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 const ExpenseManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -141,7 +142,19 @@ const ExpenseManagement = () => {
                     <SelectContent>
                       {categorias.map((categoria) => (
                         <SelectItem key={categoria.id} value={categoria.id}>
-                          {categoria.nome}
+                          <div className="flex items-center space-x-2">
+                            <div 
+                              className="w-4 h-4 rounded flex items-center justify-center"
+                              style={{ backgroundColor: categoria.cor }}
+                            >
+                              <CategoryIcon 
+                                iconName={categoria.icone} 
+                                size={12} 
+                                className="text-white" 
+                              />
+                            </div>
+                            <span>{categoria.nome}</span>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
