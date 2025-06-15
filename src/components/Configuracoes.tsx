@@ -4,351 +4,426 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { 
-  User, 
-  Bell, 
-  Palette, 
-  Database, 
-  Shield, 
-  CreditCard,
-  Calculator,
-  Mail,
-  Smartphone,
-  Globe,
-  Save,
-  RefreshCw
-} from 'lucide-react';
+import { Settings, User, Bell, Shield, Database } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Configuracoes = () => {
-  const [notificacoes, setNotificacoes] = useState({
-    email: true,
-    push: false,
-    vencimentos: true,
-    relatorios: false
+  const { toast } = useToast();
+  const [configuracoes, setConfiguracoes] = useState({
+    perfil: {
+      nome: 'Administrador',
+      email: 'fellypecoelho2306@gmail.com',
+      telefone: '',
+      empresa: 'Minha Empresa'
+    },
+    notificacoes: {
+      emailVencimentos: true,
+      emailRelatorios: false,
+      pushNotifications: true,
+      antecedenciaVencimento: '7'
+    },
+    sistema: {
+      tema: 'light',
+      idioma: 'pt-BR',
+      timezone: 'America/Sao_Paulo',
+      moeda: 'BRL'
+    },
+    backup: {
+      automatico: true,
+      frequencia: 'semanal',
+      ultimoBackup: '2024-12-15'
+    }
   });
 
-  const [tema, setTema] = useState('claro');
-  const [moeda, setMoeda] = useState('BRL');
-  const [idioma, setIdioma] = useState('pt-BR');
+  const handleSalvarConfiguracoes = (secao: string) => {
+    console.log(`Salvando configurações da seção: ${secao}`);
+    toast({
+      title: "Configurações salvas!",
+      description: "As configurações foram atualizadas com sucesso."
+    });
+  };
+
+  const handleExportarDados = () => {
+    console.log('Exportando dados...');
+    toast({
+      title: "Exportação iniciada",
+      description: "Os dados estão sendo preparados para download."
+    });
+  };
+
+  const handleImportarDados = () => {
+    console.log('Importando dados...');
+    toast({
+      title: "Importação iniciada",
+      description: "Os dados estão sendo processados."
+    });
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
-          <p className="text-muted-foreground">Gerencie as configurações do seu sistema financeiro</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Restaurar Padrões
-          </Button>
-          <Button size="sm">
-            <Save className="w-4 h-4 mr-2" />
-            Salvar Alterações
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <p className="text-muted-foreground">
+          Gerencie as configurações do sistema e sua conta
+        </p>
       </div>
 
-      <div className="grid gap-6">
-        {/* Perfil do Usuário */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Perfil do Usuário
-            </CardTitle>
-            <CardDescription>
-              Informações básicas da sua conta
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome Completo</Label>
-                <Input id="nome" defaultValue="João Silva" />
+      <Tabs defaultValue="perfil" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="perfil">Perfil</TabsTrigger>
+          <TabsTrigger value="notificacoes">Notificações</TabsTrigger>
+          <TabsTrigger value="sistema">Sistema</TabsTrigger>
+          <TabsTrigger value="dados">Dados</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="perfil" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Informações Pessoais
+              </CardTitle>
+              <CardDescription>
+                Atualize suas informações pessoais e de contato
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nome">Nome Completo</Label>
+                  <Input
+                    id="nome"
+                    value={configuracoes.perfil.nome}
+                    onChange={(e) => setConfiguracoes({
+                      ...configuracoes,
+                      perfil: { ...configuracoes.perfil, nome: e.target.value }
+                    })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={configuracoes.perfil.email}
+                    onChange={(e) => setConfiguracoes({
+                      ...configuracoes,
+                      perfil: { ...configuracoes.perfil, email: e.target.value }
+                    })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="telefone">Telefone</Label>
+                  <Input
+                    id="telefone"
+                    value={configuracoes.perfil.telefone}
+                    onChange={(e) => setConfiguracoes({
+                      ...configuracoes,
+                      perfil: { ...configuracoes.perfil, telefone: e.target.value }
+                    })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="empresa">Empresa</Label>
+                  <Input
+                    id="empresa"
+                    value={configuracoes.perfil.empresa}
+                    onChange={(e) => setConfiguracoes({
+                      ...configuracoes,
+                      perfil: { ...configuracoes.perfil, empresa: e.target.value }
+                    })}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
-                <Input id="email" type="email" defaultValue="joao@exemplo.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="telefone">Telefone</Label>
-                <Input id="telefone" defaultValue="(11) 99999-9999" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cargo">Cargo/Função</Label>
-                <Input id="cargo" defaultValue="Administrador Financeiro" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Notificações */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
-              Notificações
-            </CardTitle>
-            <CardDescription>
-              Configure como e quando receber notificações
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base">Notificações por E-mail</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receba alertas e relatórios por e-mail
-                </p>
-              </div>
-              <Switch 
-                checked={notificacoes.email}
-                onCheckedChange={(checked) => setNotificacoes(prev => ({ ...prev, email: checked }))}
-              />
-            </div>
-            
-            <Separator />
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base">Notificações Push</Label>
-                <p className="text-sm text-muted-foreground">
-                  Alertas no navegador em tempo real
-                </p>
-              </div>
-              <Switch 
-                checked={notificacoes.push}
-                onCheckedChange={(checked) => setNotificacoes(prev => ({ ...prev, push: checked }))}
-              />
-            </div>
-            
-            <Separator />
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base">Alertas de Vencimento</Label>
-                <p className="text-sm text-muted-foreground">
-                  Avisos automáticos para contas próximas do vencimento
-                </p>
-              </div>
-              <Switch 
-                checked={notificacoes.vencimentos}
-                onCheckedChange={(checked) => setNotificacoes(prev => ({ ...prev, vencimentos: checked }))}
-              />
-            </div>
-            
-            <Separator />
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base">Relatórios Automáticos</Label>
-                <p className="text-sm text-muted-foreground">
-                  Envio automático de relatórios mensais
-                </p>
-              </div>
-              <Switch 
-                checked={notificacoes.relatorios}
-                onCheckedChange={(checked) => setNotificacoes(prev => ({ ...prev, relatorios: checked }))}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Aparência */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Palette className="w-5 h-5" />
-              Aparência e Interface
-            </CardTitle>
-            <CardDescription>
-              Personalize a aparência do sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="tema">Tema</Label>
-                <Select value={tema} onValueChange={setTema}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="claro">Claro</SelectItem>
-                    <SelectItem value="escuro">Escuro</SelectItem>
-                    <SelectItem value="auto">Automático</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="moeda">Moeda Padrão</Label>
-                <Select value={moeda} onValueChange={setMoeda}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="BRL">Real (R$)</SelectItem>
-                    <SelectItem value="USD">Dólar ($)</SelectItem>
-                    <SelectItem value="EUR">Euro (€)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="idioma">Idioma</Label>
-                <Select value={idioma} onValueChange={setIdioma}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pt-BR">Português (BR)</SelectItem>
-                    <SelectItem value="en-US">English (US)</SelectItem>
-                    <SelectItem value="es-ES">Español</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Configurações Financeiras */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="w-5 h-5" />
-              Configurações Financeiras
-            </CardTitle>
-            <CardDescription>
-              Parâmetros para cálculos e relatórios financeiros
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="dias-vencimento">Dias para Alerta de Vencimento</Label>
-                <Input id="dias-vencimento" type="number" defaultValue="7" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="limite-credito">Limite de Crédito Padrão</Label>
-                <Input id="limite-credito" defaultValue="R$ 10.000,00" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="taxa-juros">Taxa de Juros Padrão (%)</Label>
-                <Input id="taxa-juros" type="number" step="0.01" defaultValue="2.5" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="periodo-relatorio">Período Padrão dos Relatórios</Label>
-                <Select defaultValue="mensal">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="semanal">Semanal</SelectItem>
-                    <SelectItem value="mensal">Mensal</SelectItem>
-                    <SelectItem value="trimestral">Trimestral</SelectItem>
-                    <SelectItem value="anual">Anual</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Segurança */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
-              Segurança
-            </CardTitle>
-            <CardDescription>
-              Configurações de segurança e privacidade
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
+              <Separator />
+              <Button onClick={() => handleSalvarConfiguracoes('perfil')}>
+                Salvar Alterações
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="notificacoes" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Preferências de Notificação
+              </CardTitle>
+              <CardDescription>
+                Configure como e quando você deseja receber notificações
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Autenticação de Dois Fatores</Label>
+                  <Label>Email de Vencimentos</Label>
                   <p className="text-sm text-muted-foreground">
-                    Adicione uma camada extra de segurança
+                    Receber emails sobre vencimentos próximos
                   </p>
                 </div>
-                <Badge variant="outline">Inativo</Badge>
+                <Switch
+                  checked={configuracoes.notificacoes.emailVencimentos}
+                  onCheckedChange={(checked) => setConfiguracoes({
+                    ...configuracoes,
+                    notificacoes: { ...configuracoes.notificacoes, emailVencimentos: checked }
+                  })}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Email de Relatórios</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receber relatórios mensais por email
+                  </p>
+                </div>
+                <Switch
+                  checked={configuracoes.notificacoes.emailRelatorios}
+                  onCheckedChange={(checked) => setConfiguracoes({
+                    ...configuracoes,
+                    notificacoes: { ...configuracoes.notificacoes, emailRelatorios: checked }
+                  })}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Notificações Push</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receber notificações no navegador
+                  </p>
+                </div>
+                <Switch
+                  checked={configuracoes.notificacoes.pushNotifications}
+                  onCheckedChange={(checked) => setConfiguracoes({
+                    ...configuracoes,
+                    notificacoes: { ...configuracoes.notificacoes, pushNotifications: checked }
+                  })}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="antecedencia">Antecedência para Vencimentos</Label>
+                <Select 
+                  value={configuracoes.notificacoes.antecedenciaVencimento} 
+                  onValueChange={(value) => setConfiguracoes({
+                    ...configuracoes,
+                    notificacoes: { ...configuracoes.notificacoes, antecedenciaVencimento: value }
+                  })}
+                >
+                  <SelectTrigger className="w-full mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 dia</SelectItem>
+                    <SelectItem value="3">3 dias</SelectItem>
+                    <SelectItem value="7">7 dias</SelectItem>
+                    <SelectItem value="15">15 dias</SelectItem>
+                    <SelectItem value="30">30 dias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Separator />
+              <Button onClick={() => handleSalvarConfiguracoes('notificacoes')}>
+                Salvar Preferências
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="sistema" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Configurações do Sistema
+              </CardTitle>
+              <CardDescription>
+                Ajuste as configurações gerais do sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="tema">Tema</Label>
+                  <Select 
+                    value={configuracoes.sistema.tema} 
+                    onValueChange={(value) => setConfiguracoes({
+                      ...configuracoes,
+                      sistema: { ...configuracoes.sistema, tema: value }
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">Claro</SelectItem>
+                      <SelectItem value="dark">Escuro</SelectItem>
+                      <SelectItem value="system">Sistema</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="idioma">Idioma</Label>
+                  <Select 
+                    value={configuracoes.sistema.idioma} 
+                    onValueChange={(value) => setConfiguracoes({
+                      ...configuracoes,
+                      sistema: { ...configuracoes.sistema, idioma: value }
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
+                      <SelectItem value="en-US">English (US)</SelectItem>
+                      <SelectItem value="es-ES">Español</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="timezone">Fuso Horário</Label>
+                  <Select 
+                    value={configuracoes.sistema.timezone} 
+                    onValueChange={(value) => setConfiguracoes({
+                      ...configuracoes,
+                      sistema: { ...configuracoes.sistema, timezone: value }
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="America/Sao_Paulo">São Paulo (GMT-3)</SelectItem>
+                      <SelectItem value="America/New_York">New York (GMT-5)</SelectItem>
+                      <SelectItem value="Europe/London">London (GMT+0)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="moeda">Moeda</Label>
+                  <Select 
+                    value={configuracoes.sistema.moeda} 
+                    onValueChange={(value) => setConfiguracoes({
+                      ...configuracoes,
+                      sistema: { ...configuracoes.sistema, moeda: value }
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BRL">Real (R$)</SelectItem>
+                      <SelectItem value="USD">Dólar ($)</SelectItem>
+                      <SelectItem value="EUR">Euro (€)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <Separator />
+              <Button onClick={() => handleSalvarConfiguracoes('sistema')}>
+                Salvar Configurações
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="dados" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Gerenciamento de Dados
+              </CardTitle>
+              <CardDescription>
+                Backup, importação e exportação de dados
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-4">Backup Automático</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="space-y-0.5">
+                    <Label>Backup Automático</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Realizar backup automático dos dados
+                    </p>
+                  </div>
+                  <Switch
+                    checked={configuracoes.backup.automatico}
+                    onCheckedChange={(checked) => setConfiguracoes({
+                      ...configuracoes,
+                      backup: { ...configuracoes.backup, automatico: checked }
+                    })}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="frequencia">Frequência</Label>
+                    <Select 
+                      value={configuracoes.backup.frequencia} 
+                      onValueChange={(value) => setConfiguracoes({
+                        ...configuracoes,
+                        backup: { ...configuracoes.backup, frequencia: value }
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="diario">Diário</SelectItem>
+                        <SelectItem value="semanal">Semanal</SelectItem>
+                        <SelectItem value="mensal">Mensal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label>Último Backup</Label>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {new Date(configuracoes.backup.ultimoBackup).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                </div>
               </div>
               
               <Separator />
               
-              <div className="space-y-2">
-                <Label htmlFor="senha-atual">Senha Atual</Label>
-                <Input id="senha-atual" type="password" placeholder="Digite sua senha atual" />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nova-senha">Nova Senha</Label>
-                  <Input id="nova-senha" type="password" placeholder="Digite a nova senha" />
+              <div>
+                <h3 className="text-lg font-medium mb-4">Exportar/Importar Dados</h3>
+                <div className="flex gap-4">
+                  <Button variant="outline" onClick={handleExportarDados}>
+                    Exportar Dados
+                  </Button>
+                  <Button variant="outline" onClick={handleImportarDados}>
+                    Importar Dados
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmar-senha">Confirmar Nova Senha</Label>
-                  <Input id="confirmar-senha" type="password" placeholder="Confirme a nova senha" />
-                </div>
-              </div>
-              
-              <Button variant="outline">Alterar Senha</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Backup e Dados */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="w-5 h-5" />
-              Backup e Dados
-            </CardTitle>
-            <CardDescription>
-              Gerenciamento de dados e backup do sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base">Backup Automático</Label>
-                <p className="text-sm text-muted-foreground">
-                  Backup diário automático dos dados
+                <p className="text-sm text-muted-foreground mt-2">
+                  Exporte seus dados para backup ou importe dados de outro sistema
                 </p>
               </div>
-              <Switch defaultChecked />
-            </div>
-            
-            <Separator />
-            
-            <div className="space-y-2">
-              <Label>Último Backup</Label>
-              <p className="text-sm text-muted-foreground">13/06/2025 às 03:00</p>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button variant="outline">
-                <Database className="w-4 h-4 mr-2" />
-                Fazer Backup Agora
+              
+              <Separator />
+              <Button onClick={() => handleSalvarConfiguracoes('dados')}>
+                Salvar Configurações
               </Button>
-              <Button variant="outline">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Restaurar Backup
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

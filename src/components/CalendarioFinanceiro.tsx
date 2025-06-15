@@ -3,199 +3,238 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import CalendarioView from '@/components/calendario/CalendarioView';
-import EventosDia from '@/components/calendario/EventosDia';
-import ResumoMensal from '@/components/calendario/ResumoMensal';
-import FiltrosCalendario from '@/components/calendario/FiltrosCalendario';
-import { useCalendarioData } from '@/hooks/useCalendarioData';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Calendar, Filter, BarChart3, List } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Receipt, TrendingUp, CreditCard } from 'lucide-react';
 
 const CalendarioFinanceiro = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [filtros, setFiltros] = useState({
-    tipo: 'todos' as 'todos' | 'despesas' | 'aportes',
-    status: 'todos' as 'todos' | 'pendente' | 'pago' | 'confirmado',
-    investidor: 'todos'
-  });
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const eventos = [
+    {
+      id: '1',
+      tipo: 'despesa',
+      titulo: 'Aluguel',
+      valor: 2500.00,
+      data: new Date(2024, 11, 25), // 25 de dezembro
+      status: 'pendente'
+    },
+    {
+      id: '2',
+      tipo: 'aporte',
+      titulo: 'Aporte João Silva',
+      valor: 5000.00,
+      data: new Date(2024, 11, 15), // 15 de dezembro
+      status: 'confirmado'
+    },
+    {
+      id: '3',
+      tipo: 'cartao',
+      titulo: 'Vencimento Cartão Principal',
+      valor: 1200.00,
+      data: new Date(2024, 11, 10), // 10 de dezembro
+      status: 'pendente'
+    }
+  ];
+
+  const getDaysInMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const goToPreviousMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const getEventosForDay = (day: number) => {
+    return eventos.filter(evento => {
+      const eventoDate = new Date(evento.data);
+      return eventoDate.getDate() === day &&
+             eventoDate.getMonth() === currentDate.getMonth() &&
+             eventoDate.getFullYear() === currentDate.getFullYear();
+    });
+  };
+
+  const getEventIcon = (tipo: string) => {
+    switch (tipo) {
+      case 'despesa':
+        return <Receipt className="h-3 w-3" />;
+      case 'aporte':
+        return <TrendingUp className="h-3 w-3" />;
+      case 'cartao':
+        return <CreditCard className="h-3 w-3" />;
+      default:
+        return <Calendar className="h-3 w-3" />;
+    }
+  };
+
+  const getEventColor = (tipo: string) => {
+    switch (tipo) {
+      case 'despesa':
+        return 'destructive';
+      case 'aporte':
+        return 'default';
+      case 'cartao':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
+
+  const daysInMonth = getDaysInMonth(currentDate);
+  const firstDay = getFirstDayOfMonth(currentDate);
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  const days = [];
   
-  const { eventosCalendario, getEventosDia } = useCalendarioData();
+  // Dias vazios do início do mês
+  for (let i = 0; i < firstDay; i++) {
+    days.push(<div key={`empty-${i}`} className="h-24 border border-border"></div>);
+  }
 
-  const eventosFiltrados = eventosCalendario.filter(evento => {
-    if (filtros.tipo !== 'todos' && evento.tipo !== filtros.tipo.slice(0, -1)) return false;
-    if (filtros.status !== 'todos' && evento.status !== filtros.status) return false;
-    if (filtros.investidor !== 'todos' && evento.investidor !== filtros.investidor) return false;
-    return true;
-  });
+  // Dias do mês
+  for (let day = 1; day <= daysInMonth; day++) {
+    const eventosDay = getEventosForDay(day);
+    days.push(
+      <div key={day} className="h-24 border border-border p-1 bg-background hover:bg-accent/50 transition-colors">
+        <div className="font-medium text-sm mb-1">{day}</div>
+        <div className="space-y-1">
+          {eventosDay.slice(0, 2).map((evento) => (
+            <div key={evento.id} className="flex items-center gap-1">
+              {getEventIcon(evento.tipo)}
+              <Badge variant={getEventColor(evento.tipo)} className="text-xs p-0 px-1 h-4">
+                {evento.tipo}
+              </Badge>
+            </div>
+          ))}
+          {eventosDay.length > 2 && (
+            <div className="text-xs text-muted-foreground">
+              +{eventosDay.length - 2} mais
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
-  const eventosDoDia = getEventosDia(selectedDate).filter(evento => {
-    if (filtros.tipo !== 'todos' && evento.tipo !== filtros.tipo.slice(0, -1)) return false;
-    if (filtros.status !== 'todos' && evento.status !== filtros.status) return false;
-    if (filtros.investidor !== 'todos' && evento.investidor !== filtros.investidor) return false;
-    return true;
-  });
-
-  const mesAtual = format(selectedDate, 'MMMM yyyy', { locale: ptBR });
-  const inicioMes = startOfMonth(selectedDate);
-  const fimMes = endOfMonth(selectedDate);
+  const proximosEventos = eventos
+    .filter(evento => evento.data >= new Date())
+    .sort((a, b) => a.data.getTime() - b.data.getTime())
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Calendar className="w-8 h-8 text-blue-600" />
-            Calendário Financeiro
-          </h1>
-          <p className="text-gray-500 mt-1 capitalize">
-            {mesAtual} - Visualize vencimentos e aportes programados
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="text-sm">
-            {eventosFiltrados.length} eventos
-          </Badge>
-          <Button variant="outline" size="sm">
-            <Filter className="w-4 h-4 mr-2" />
-            Exportar
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Calendário Financeiro</h1>
+        <p className="text-muted-foreground">
+          Visualize todos os eventos financeiros em um calendário
+        </p>
       </div>
 
-      {/* Filtros */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Filtros
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FiltrosCalendario filtros={filtros} onFiltrosChange={setFiltros} />
-        </CardContent>
-      </Card>
-
-      {/* Tabs principais */}
-      <Tabs defaultValue="calendario" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:grid-cols-3">
-          <TabsTrigger value="calendario" className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            Calendário
-          </TabsTrigger>
-          <TabsTrigger value="lista" className="flex items-center gap-2">
-            <List className="w-4 h-4" />
-            Lista
-          </TabsTrigger>
-          <TabsTrigger value="resumo" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            Resumo
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="calendario" className="space-y-6">
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            {/* Calendário principal */}
-            <div className="xl:col-span-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="capitalize">{mesAtual}</CardTitle>
-                  <CardDescription>
-                    Clique em uma data para ver os eventos do dia
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <CalendarioView
-                    eventos={eventosFiltrados}
-                    selectedDate={selectedDate}
-                    onDateSelect={setSelectedDate}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Eventos do dia selecionado */}
-            <div>
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle className="text-lg">
-                    {format(selectedDate, "d 'de' MMMM", { locale: ptBR })}
-                  </CardTitle>
-                  <CardDescription>
-                    {eventosDoDia.length} evento(s) programado(s)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <EventosDia eventos={eventosDoDia} />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="lista" className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Calendário */}
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Todos os Eventos</CardTitle>
-              <CardDescription>
-                Lista completa de eventos do mês atual
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={goToPreviousMonth}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={goToNextMonth}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {eventosFiltrados
-                  .filter(evento => {
-                    const dataEvento = new Date(evento.data);
-                    return dataEvento >= inicioMes && dataEvento <= fimMes;
-                  })
-                  .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
-                  .map((evento) => (
-                    <div
-                      key={evento.id}
-                      className="p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() => setSelectedDate(new Date(evento.data))}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h4 className="font-medium text-gray-900">{evento.titulo}</h4>
-                            <Badge 
-                              variant={evento.tipo === 'aporte' ? 'default' : 
-                                      evento.status === 'pago' ? 'secondary' : 'destructive'}
-                              className="text-xs"
-                            >
-                              {evento.tipo === 'aporte' ? 'Aporte' : 
-                               evento.status === 'pago' ? 'Pago' : 'Pendente'}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-1">
-                            {format(new Date(evento.data), "d 'de' MMMM", { locale: ptBR })}
-                          </p>
-                          <p className="text-lg font-semibold text-gray-900">
-                            R$ {evento.valor.toLocaleString('pt-BR', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="grid grid-cols-7 gap-0 mb-2">
+                {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
+                  <div key={day} className="h-8 flex items-center justify-center font-medium text-sm bg-muted">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-0 border border-border">
+                {days}
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="resumo" className="space-y-6">
-          <ResumoMensal 
-            eventos={eventosFiltrados}
-            mesAtual={selectedDate}
-          />
-        </TabsContent>
-      </Tabs>
+        {/* Próximos Eventos */}
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Próximos Eventos</CardTitle>
+              <CardDescription>Eventos financeiros dos próximos dias</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {proximosEventos.map((evento) => (
+                  <div key={evento.id} className="flex items-start gap-3 p-3 border border-border rounded-lg">
+                    <div className="flex-shrink-0 mt-1">
+                      {getEventIcon(evento.tipo)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">{evento.titulo}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {evento.data.toLocaleDateString('pt-BR')}
+                      </p>
+                      <p className="text-sm font-medium">
+                        R$ {evento.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <Badge variant={getEventColor(evento.tipo)}>
+                      {evento.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Resumo do Mês */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Resumo do Mês</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Despesas</span>
+                  <span className="text-sm font-bold text-destructive">R$ 3.700,00</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Aportes</span>
+                  <span className="text-sm font-bold text-green-600">R$ 5.000,00</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Cartões</span>
+                  <span className="text-sm font-bold text-amber-600">R$ 1.200,00</span>
+                </div>
+                <hr />
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Saldo do Mês</span>
+                  <span className="font-bold text-green-600">R$ 100,00</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };

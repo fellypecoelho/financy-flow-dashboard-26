@@ -1,187 +1,228 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Users, TrendingUp, DollarSign } from 'lucide-react';
-import { useInvestidores } from '@/hooks/useInvestidores';
-import { Investidor } from '@/types';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import InvestidorModal from './investidores/InvestidorModal';
-import InvestidorTable from './investidores/InvestidorTable';
-import InvestidorStats from './investidores/InvestidorStats';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Plus, Trash2, Users, DollarSign } from 'lucide-react';
 
 const InvestidorManagement = () => {
-  const { 
-    investidores, 
-    createInvestidor, 
-    updateInvestidor, 
-    deleteInvestidor,
-    isLoading 
-  } = useInvestidores();
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedInvestidor, setSelectedInvestidor] = useState<Investidor | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [investidores, setInvestidores] = useState([
+    {
+      id: '1',
+      nome: 'João Silva',
+      email: 'joao@email.com',
+      saldo_atual: 15000.00,
+      ativo: true
+    },
+    {
+      id: '2',
+      nome: 'Maria Santos',
+      email: 'maria@email.com',
+      saldo_atual: 8500.00,
+      ativo: true
+    },
+    {
+      id: '3',
+      nome: 'Pedro Costa',
+      email: 'pedro@email.com',
+      saldo_atual: 0.00,
+      ativo: false
+    }
+  ]);
 
-  // Mock aportes até implementarmos a funcionalidade
-  const aportes = [];
+  const [formData, setFormData] = useState({
+    nome: '',
+    email: '',
+    saldo_inicial: ''
+  });
 
-  const handleAddInvestidor = () => {
-    setSelectedInvestidor(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEditInvestidor = (investidor: Investidor) => {
-    setSelectedInvestidor(investidor);
-    setIsModalOpen(true);
+  const handleCreateInvestidor = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newInvestidor = {
+      id: Date.now().toString(),
+      nome: formData.nome,
+      email: formData.email,
+      saldo_atual: parseFloat(formData.saldo_inicial) || 0,
+      ativo: true
+    };
+    setInvestidores([...investidores, newInvestidor]);
+    setFormData({
+      nome: '',
+      email: '',
+      saldo_inicial: ''
+    });
+    setIsCreateModalOpen(false);
   };
 
   const handleDeleteInvestidor = (id: string) => {
-    deleteInvestidor(id);
-  };
-
-  const handleSaveInvestidor = (investidor: Investidor) => {
-    if (selectedInvestidor) {
-      updateInvestidor({ id: investidor.id, ...investidor });
-    } else {
-      const { id, ...investidorData } = investidor;
-      createInvestidor(investidorData);
+    if (confirm('Tem certeza que deseja deletar este investidor?')) {
+      setInvestidores(investidores.filter(inv => inv.id !== id));
     }
-    setIsModalOpen(false);
   };
 
-  const filteredInvestidores = investidores.filter(investidor =>
-    investidor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    investidor.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Calcular estatísticas dos investidores
-  const calcularEstatisticas = () => {
-    const totalInvestidores = investidores.length;
-    const investidoresAtivos = investidores.filter(inv => inv.ativo).length;
-    const totalAportes = aportes.reduce((acc: number, aporte: any) => acc + aporte.valor, 0);
-    const saldoTotal = investidores.reduce((acc, inv) => acc + inv.saldo_atual, 0);
-
-    return {
-      totalInvestidores,
-      investidoresAtivos,
-      totalAportes,
-      saldoTotal
-    };
+  const handleToggleStatus = (id: string) => {
+    setInvestidores(investidores.map(inv => 
+      inv.id === id ? { ...inv, ativo: !inv.ativo } : inv
+    ));
   };
 
-  const stats = calcularEstatisticas();
-
-  if (isLoading) {
-    return <div className="p-6">Carregando...</div>;
-  }
+  const totalInvestidores = investidores.length;
+  const investidoresAtivos = investidores.filter(inv => inv.ativo).length;
+  const saldoTotal = investidores.reduce((sum, inv) => sum + inv.saldo_atual, 0);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Gerenciamento de Investidores</h1>
-          <p className="text-muted-foreground mt-1">Controle todos os investidores e seus aportes</p>
+          <h1 className="text-3xl font-bold tracking-tight">Gestão de Investidores</h1>
+          <p className="text-muted-foreground">
+            Gerencie todos os investidores e seus saldos
+          </p>
         </div>
-        <Button onClick={handleAddInvestidor} className="flex items-center">
-          <Plus className="h-5 w-5 mr-2" />
-          Novo Investidor
-        </Button>
+        
+        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Investidor
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Cadastrar Novo Investidor</DialogTitle>
+              <DialogDescription>
+                Adicione um novo investidor ao sistema
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateInvestidor} className="space-y-4">
+              <div>
+                <Label htmlFor="nome">Nome Completo</Label>
+                <Input
+                  id="nome"
+                  value={formData.nome}
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="saldo_inicial">Saldo Inicial (opcional)</Label>
+                <Input
+                  id="saldo_inicial"
+                  type="number"
+                  step="0.01"
+                  value={formData.saldo_inicial}
+                  onChange={(e) => setFormData({ ...formData, saldo_inicial: e.target.value })}
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  Cadastrar Investidor
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total de Investidores</p>
-                <p className="text-2xl font-bold text-foreground">{stats.totalInvestidores}</p>
-              </div>
-              <Users className="h-8 w-8 text-primary" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de Investidores</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalInvestidores}</div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Investidores Ativos</p>
-                <p className="text-2xl font-bold text-green-600">{stats.investidoresAtivos}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Investidores Ativos</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{investidoresAtivos}</div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total de Aportes</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {stats.totalAportes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
-              </div>
-              <DollarSign className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Saldo Total</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  {stats.saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
-              </div>
-              <DollarSign className="h-8 w-8 text-orange-600" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Saldo Total</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              R$ {saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Estatísticas detalhadas */}
-      <InvestidorStats investidores={investidores} aportes={aportes} />
-
-      {/* Search */}
       <Card>
-        <CardContent className="p-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Buscar por nome ou email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+        <CardHeader>
+          <CardTitle>Lista de Investidores</CardTitle>
+          <CardDescription>Todos os investidores cadastrados no sistema</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Saldo Atual</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {investidores.map((investidor) => (
+                <TableRow key={investidor.id}>
+                  <TableCell className="font-medium">{investidor.nome}</TableCell>
+                  <TableCell>{investidor.email}</TableCell>
+                  <TableCell>R$ {investidor.saldo_atual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={investidor.ativo ? 'default' : 'destructive'}
+                      className="cursor-pointer"
+                      onClick={() => handleToggleStatus(investidor.id)}
+                    >
+                      {investidor.ativo ? 'Ativo' : 'Inativo'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteInvestidor(investidor.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
-
-      {/* Investidores Table */}
-      <Card>
-        <InvestidorTable
-          investidores={filteredInvestidores}
-          aportes={aportes}
-          onEdit={handleEditInvestidor}
-          onDelete={handleDeleteInvestidor}
-        />
-      </Card>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <InvestidorModal
-          investidor={selectedInvestidor}
-          onSave={handleSaveInvestidor}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
     </div>
   );
 };
