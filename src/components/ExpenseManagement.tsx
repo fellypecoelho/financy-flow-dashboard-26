@@ -140,7 +140,7 @@ const ExpenseManagement = () => {
                       <SelectValue placeholder="Selecione uma categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categorias.map((categoria) => (
+                      {categorias && categorias.map((categoria) => (
                         <SelectItem key={categoria.id} value={categoria.id}>
                           <div className="flex items-center space-x-2">
                             <div 
