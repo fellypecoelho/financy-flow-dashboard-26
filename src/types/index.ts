@@ -4,7 +4,9 @@ export interface Investidor {
   nome: string;
   email: string;
   ativo: boolean;
-  saldoAtual: number;
+  saldo_atual: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Categoria {
@@ -12,6 +14,8 @@ export interface Categoria {
   nome: string;
   cor: string;
   icone: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Cartao {

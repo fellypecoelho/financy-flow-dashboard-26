@@ -29,7 +29,7 @@ const InvestorBalances = ({ investidores }: InvestorBalancesProps) => {
             </div>
             <div className="text-right">
               <p className="font-semibold text-gray-900">
-                R$ {investidor.saldoAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                R$ {investidor.saldo_atual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                 investidor.ativo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
