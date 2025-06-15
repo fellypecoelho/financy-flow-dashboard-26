@@ -1,8 +1,9 @@
 
 import { useMemo } from 'react';
 import { Cartao, Despesa } from '@/types';
+import { CartaoCalculations, CartaoCalculation } from '@/types/cartao';
 
-export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]) => {
+export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]): CartaoCalculations => {
   const calculations = useMemo(() => {
     const limiteTotal = cartoes.reduce((acc, cartao) => acc + cartao.limite, 0);
     
@@ -49,7 +50,7 @@ export const useCartaoCalculations = (cartoes: Cartao[], despesas: Despesa[]) =>
   return calculations;
 };
 
-export const useCartaoCalculation = (cartaoId: string, cartoes: Cartao[], despesas: Despesa[]) => {
+export const useCartaoCalculation = (cartaoId: string, cartoes: Cartao[], despesas: Despesa[]): CartaoCalculation | null => {
   return useMemo(() => {
     const cartao = cartoes.find(c => c.id === cartaoId);
     if (!cartao) return null;

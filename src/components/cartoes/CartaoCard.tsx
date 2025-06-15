@@ -1,18 +1,11 @@
 
 import React, { memo } from 'react';
-import { Cartao, Investidor } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { useCartaoCalculation } from '@/hooks/useCartaoCalculations';
+import { CartaoCardProps } from '@/types/cartao';
 import CartaoVisual from './CartaoVisual';
 import CartaoInfo from './CartaoInfo';
-
-interface CartaoCardProps {
-  cartao: Cartao;
-  investidores: Investidor[];
-  onEdit: (cartao: Cartao) => void;
-  onDelete: (id: string) => void;
-}
 
 const CartaoCard = memo(({ cartao, investidores, onEdit, onDelete }: CartaoCardProps) => {
   const { despesas } = useFinancialData();

@@ -1,14 +1,8 @@
 
 import React, { memo } from 'react';
 import { CreditCard } from 'lucide-react';
-import { Cartao } from '@/types';
+import { CartaoVisualProps } from '@/types/cartao';
 import { getBandeiraGradient, formatCardNumber, formatLimit } from '@/utils/cartaoUtils';
-
-interface CartaoVisualProps {
-  cartao: Cartao;
-  limiteUtilizado: number;
-  percentualUtilizado: number;
-}
 
 const CartaoVisual = memo(({ cartao, limiteUtilizado, percentualUtilizado }: CartaoVisualProps) => {
   const limiteDisponivel = cartao.limite - limiteUtilizado;

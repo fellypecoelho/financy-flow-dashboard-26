@@ -1,18 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { Cartao, Investidor } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-interface CartaoModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (cartao: Omit<Cartao, 'id'>) => void;
-  cartao: Cartao | null;
-  investidores: Investidor[];
-}
+import { CartaoModalProps } from '@/types/cartao';
 
 const CartaoModal = ({ isOpen, onClose, onSave, cartao, investidores }: CartaoModalProps) => {
   const [formData, setFormData] = useState({

@@ -1,15 +1,8 @@
 
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
-import { Cartao, Investidor } from '@/types';
+import { CartaoInfoProps } from '@/types/cartao';
 import { getInvestidorNome, getInvestidorInitials } from '@/utils/investidorUtils';
-
-interface CartaoInfoProps {
-  cartao: Cartao;
-  investidores: Investidor[];
-  onEdit: (cartao: Cartao) => void;
-  onDelete: (id: string) => void;
-}
 
 const CartaoInfo = ({ cartao, investidores, onEdit, onDelete }: CartaoInfoProps) => {
   return (

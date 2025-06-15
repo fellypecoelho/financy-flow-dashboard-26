@@ -1,16 +1,11 @@
 
 import React, { memo } from 'react';
-import { Cartao, Despesa } from '@/types';
 import { useCartaoCalculations } from '@/hooks/useCartaoCalculations';
+import { CartaoStatsProps } from '@/types/cartao';
 import LimiteTotalCard from './stats/LimiteTotalCard';
 import LimiteUtilizadoCard from './stats/LimiteUtilizadoCard';
 import ProximaFaturaCard from './stats/ProximaFaturaCard';
 import CartoesAtivosCard from './stats/CartoesAtivosCard';
-
-interface CartaoStatsProps {
-  cartoes: Cartao[];
-  despesas: Despesa[];
-}
 
 const CartaoStats = memo(({ cartoes, despesas }: CartaoStatsProps) => {
   const { 

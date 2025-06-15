@@ -1,15 +1,6 @@
 
 import React from 'react';
-import { Investidor } from '@/types';
-
-interface CartaoFiltersProps {
-  filters: {
-    investidor: string;
-    bandeira: string;
-  };
-  onFiltersChange: (filters: any) => void;
-  investidores: Investidor[];
-}
+import { CartaoFiltersProps } from '@/types/cartao';
 
 const CartaoFilters = ({ filters, onFiltersChange, investidores }: CartaoFiltersProps) => {
   const handleFilterChange = (key: string, value: string) => {

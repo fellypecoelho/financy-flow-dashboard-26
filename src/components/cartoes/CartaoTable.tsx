@@ -1,17 +1,10 @@
 
 import React from 'react';
-import { Cartao, Investidor } from '@/types';
 import { Table, TableBody } from '@/components/ui/table';
+import { CartaoTableProps } from '@/types/cartao';
 import CartaoTableHeader from './table/CartaoTableHeader';
 import CartaoTableRow from './table/CartaoTableRow';
 import CartaoTableEmpty from './table/CartaoTableEmpty';
-
-interface CartaoTableProps {
-  cartoes: Cartao[];
-  investidores: Investidor[];
-  onEdit: (cartao: Cartao) => void;
-  onDelete: (id: string) => void;
-}
 
 const CartaoTable = ({ cartoes, investidores, onEdit, onDelete }: CartaoTableProps) => {
   if (cartoes.length === 0) {

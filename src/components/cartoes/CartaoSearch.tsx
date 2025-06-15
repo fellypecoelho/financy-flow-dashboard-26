@@ -3,19 +3,8 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Investidor } from '@/types';
+import { CartaoSearchProps } from '@/types/cartao';
 import CartaoFilters from './CartaoFilters';
-
-interface CartaoSearchProps {
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  filters: {
-    investidor: string;
-    bandeira: string;
-  };
-  onFiltersChange: (filters: { investidor: string; bandeira: string }) => void;
-  investidores: Investidor[];
-}
 
 const CartaoSearch = ({ 
   searchTerm, 
