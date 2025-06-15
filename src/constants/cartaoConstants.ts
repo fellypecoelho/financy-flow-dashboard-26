@@ -6,11 +6,14 @@ export const BANDEIRAS = {
   AMERICAN_EXPRESS: 'American Express'
 } as const;
 
+export type BandeiraType = typeof BANDEIRAS[keyof typeof BANDEIRAS];
+
+// Usando cores do design system via CSS variables
 export const BANDEIRA_COLORS = {
-  [BANDEIRAS.VISA]: 'text-blue-600 bg-blue-100',
-  [BANDEIRAS.MASTERCARD]: 'text-orange-600 bg-orange-100',
-  [BANDEIRAS.ELO]: 'text-purple-600 bg-purple-100',
-  [BANDEIRAS.AMERICAN_EXPRESS]: 'text-green-600 bg-green-100'
+  [BANDEIRAS.VISA]: 'text-blue-600 bg-blue-50 border-blue-200',
+  [BANDEIRAS.MASTERCARD]: 'text-orange-600 bg-orange-50 border-orange-200',
+  [BANDEIRAS.ELO]: 'text-purple-600 bg-purple-50 border-purple-200',
+  [BANDEIRAS.AMERICAN_EXPRESS]: 'text-green-600 bg-green-50 border-green-200'
 } as const;
 
 export const BANDEIRA_GRADIENTS = {
@@ -21,8 +24,8 @@ export const BANDEIRA_GRADIENTS = {
 } as const;
 
 export const DEFAULT_COLORS = {
-  COLOR: 'text-gray-600 bg-gray-100',
-  GRADIENT: 'from-gray-500 to-gray-700'
+  COLOR: 'text-muted-foreground bg-muted border-border',
+  GRADIENT: 'from-muted to-muted-foreground'
 } as const;
 
 export const CURRENCY_CONFIG = {
@@ -34,4 +37,11 @@ export const PERCENTAGE_THRESHOLDS = {
   LOW: 30,
   MEDIUM: 70,
   HIGH: 90
+} as const;
+
+export const STATUS_COLORS = {
+  SUCCESS: 'text-green-600 bg-green-50',
+  WARNING: 'text-yellow-600 bg-yellow-50',
+  ERROR: 'text-red-600 bg-red-50',
+  INFO: 'text-blue-600 bg-blue-50'
 } as const;

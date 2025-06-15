@@ -39,20 +39,26 @@ const ConfirmationModal = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-background border">
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="text-foreground">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-muted-foreground">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>
+          <AlertDialogCancel 
+            onClick={onClose}
+            className="border-input text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
-            className={variant === 'destructive' ? 'bg-red-600 hover:bg-red-700' : ''}
+            className={variant === 'destructive' 
+              ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' 
+              : 'bg-primary text-primary-foreground hover:bg-primary/90'
+            }
           >
             {confirmText}
           </AlertDialogAction>

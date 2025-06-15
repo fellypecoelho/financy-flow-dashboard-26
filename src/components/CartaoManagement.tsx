@@ -4,6 +4,7 @@ import { useFinancialData } from '@/hooks/useFinancialData';
 import { useCartaoFilters } from '@/hooks/useCartaoFilters';
 import { Cartao } from '@/types';
 import { Card } from '@/components/ui/card';
+import { showSuccessToast, showErrorToast } from '@/utils/toastUtils';
 import CartaoHeader from './cartoes/CartaoHeader';
 import CartaoStats from './cartoes/CartaoStats';
 import CartaoSearch from './cartoes/CartaoSearch';
@@ -48,25 +49,32 @@ const CartaoManagement = () => {
 
   const confirmDeleteCartao = () => {
     setCartoes(prev => prev.filter(cartao => cartao.id !== deleteConfirmation.cartaoId));
+    showSuccessToast('Cartão excluído', 'O cartão foi removido com sucesso.');
     setDeleteConfirmation({ isOpen: false, cartaoId: '', cartaoNome: '' });
   };
 
   const handleSaveCartao = (cartaoData: Omit<Cartao, 'id'>) => {
-    if (editingCartao) {
-      setCartoes(prev => prev.map(cartao => 
-        cartao.id === editingCartao.id 
-          ? { ...cartaoData, id: editingCartao.id }
-          : cartao
-      ));
-    } else {
-      const newCartao: Cartao = {
-        ...cartaoData,
-        id: Date.now().toString()
-      };
-      setCartoes(prev => [...prev, newCartao]);
+    try {
+      if (editingCartao) {
+        setCartoes(prev => prev.map(cartao => 
+          cartao.id === editingCartao.id 
+            ? { ...cartaoData, id: editingCartao.id }
+            : cartao
+        ));
+        showSuccessToast('Cartão atualizado', 'As informações do cartão foram atualizadas com sucesso.');
+      } else {
+        const newCartao: Cartao = {
+          ...cartaoData,
+          id: Date.now().toString()
+        };
+        setCartoes(prev => [...prev, newCartao]);
+        showSuccessToast('Cartão criado', 'O novo cartão foi adicionado com sucesso.');
+      }
+      setIsModalOpen(false);
+      setEditingCartao(null);
+    } catch (error) {
+      showErrorToast('Erro ao salvar', 'Não foi possível salvar o cartão. Tente novamente.');
     }
-    setIsModalOpen(false);
-    setEditingCartao(null);
   };
 
   return (
@@ -85,16 +93,16 @@ const CartaoManagement = () => {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Seus Cartões</h2>
+          <h2 className="text-xl font-semibold text-foreground">Seus Cartões</h2>
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">Visualização:</span>
-            <div className="flex bg-gray-100 rounded-lg p-1">
+            <span className="text-sm text-muted-foreground">Visualização:</span>
+            <div className="flex bg-muted rounded-lg p-1">
               <button
                 onClick={() => setViewMode('cards')}
                 className={`px-3 py-1 rounded-md text-sm transition-colors ${
                   viewMode === 'cards'
-                    ? 'bg-white text-gray-900 shadow'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-background text-foreground shadow'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Cards
@@ -103,8 +111,8 @@ const CartaoManagement = () => {
                 onClick={() => setViewMode('table')}
                 className={`px-3 py-1 rounded-md text-sm transition-colors ${
                   viewMode === 'table'
-                    ? 'bg-white text-gray-900 shadow'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-background text-foreground shadow'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Lista
