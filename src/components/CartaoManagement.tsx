@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { useCartaoFilters } from '@/hooks/useCartaoFilters';
@@ -7,9 +8,10 @@ import CartaoHeader from './cartoes/CartaoHeader';
 import CartaoStats from './cartoes/CartaoStats';
 import CartaoSearch from './cartoes/CartaoSearch';
 import CartaoTable from './cartoes/CartaoTable';
-import CartaoModal from './cartoes/CartaoModal';
 import CartaoCard from './cartoes/CartaoCard';
 import CartaoTransactions from './cartoes/CartaoTransactions';
+import CartaoModalBasic from './modals/CartaoModalBasic';
+import ConfirmationModal from './ui/ConfirmationModal';
 
 const CartaoManagement = () => {
   const { cartoes, investidores, setCartoes, despesas } = useFinancialData();
@@ -17,6 +19,11 @@ const CartaoManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCartao, setEditingCartao] = useState<Cartao | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{ isOpen: boolean; cartaoId: string; cartaoNome: string }>({
+    isOpen: false,
+    cartaoId: '',
+    cartaoNome: ''
+  });
 
   const handleAddCartao = () => {
     setEditingCartao(null);
@@ -29,9 +36,19 @@ const CartaoManagement = () => {
   };
 
   const handleDeleteCartao = (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este cartão?')) {
-      setCartoes(prev => prev.filter(cartao => cartao.id !== id));
+    const cartao = cartoes.find(c => c.id === id);
+    if (cartao) {
+      setDeleteConfirmation({
+        isOpen: true,
+        cartaoId: id,
+        cartaoNome: cartao.nome
+      });
     }
+  };
+
+  const confirmDeleteCartao = () => {
+    setCartoes(prev => prev.filter(cartao => cartao.id !== deleteConfirmation.cartaoId));
+    setDeleteConfirmation({ isOpen: false, cartaoId: '', cartaoNome: '' });
   };
 
   const handleSaveCartao = (cartaoData: Omit<Cartao, 'id'>) => {
@@ -122,7 +139,7 @@ const CartaoManagement = () => {
 
       <CartaoTransactions cartoes={cartoes} despesas={despesas} />
 
-      <CartaoModal
+      <CartaoModalBasic
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
@@ -131,6 +148,17 @@ const CartaoManagement = () => {
         onSave={handleSaveCartao}
         cartao={editingCartao}
         investidores={investidores}
+      />
+
+      <ConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() => setDeleteConfirmation({ isOpen: false, cartaoId: '', cartaoNome: '' })}
+        onConfirm={confirmDeleteCartao}
+        title="Excluir Cartão"
+        description={`Tem certeza que deseja excluir o cartão "${deleteConfirmation.cartaoNome}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="destructive"
       />
     </div>
   );
