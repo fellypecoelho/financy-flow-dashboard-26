@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Search, Users, TrendingUp, DollarSign } from 'lucide-react';
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useInvestidores } from '@/hooks/useInvestidores';
 import { Investidor } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,20 @@ import InvestidorTable from './investidores/InvestidorTable';
 import InvestidorStats from './investidores/InvestidorStats';
 
 const InvestidorManagement = () => {
-  const { investidores, aportes, setInvestidores } = useFinancialData();
+  const { 
+    investidores, 
+    createInvestidor, 
+    updateInvestidor, 
+    deleteInvestidor,
+    isLoading 
+  } = useInvestidores();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvestidor, setSelectedInvestidor] = useState<Investidor | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Mock aportes até implementarmos a funcionalidade
+  const aportes = [];
 
   const handleAddInvestidor = () => {
     setSelectedInvestidor(null);
@@ -27,14 +37,15 @@ const InvestidorManagement = () => {
   };
 
   const handleDeleteInvestidor = (id: string) => {
-    setInvestidores(investidores.filter(inv => inv.id !== id));
+    deleteInvestidor(id);
   };
 
   const handleSaveInvestidor = (investidor: Investidor) => {
     if (selectedInvestidor) {
-      setInvestidores(investidores.map(inv => inv.id === investidor.id ? investidor : inv));
+      updateInvestidor({ id: investidor.id, ...investidor });
     } else {
-      setInvestidores([...investidores, { ...investidor, id: Date.now().toString() }]);
+      const { id, ...investidorData } = investidor;
+      createInvestidor(investidorData);
     }
     setIsModalOpen(false);
   };
@@ -48,8 +59,8 @@ const InvestidorManagement = () => {
   const calcularEstatisticas = () => {
     const totalInvestidores = investidores.length;
     const investidoresAtivos = investidores.filter(inv => inv.ativo).length;
-    const totalAportes = aportes.reduce((acc, aporte) => acc + aporte.valor, 0);
-    const saldoTotal = investidores.reduce((acc, inv) => acc + inv.saldoAtual, 0);
+    const totalAportes = aportes.reduce((acc: number, aporte: any) => acc + aporte.valor, 0);
+    const saldoTotal = investidores.reduce((acc, inv) => acc + inv.saldo_atual, 0);
 
     return {
       totalInvestidores,
@@ -60,6 +71,10 @@ const InvestidorManagement = () => {
   };
 
   const stats = calcularEstatisticas();
+
+  if (isLoading) {
+    return <div className="p-6">Carregando...</div>;
+  }
 
   return (
     <div className="space-y-6">

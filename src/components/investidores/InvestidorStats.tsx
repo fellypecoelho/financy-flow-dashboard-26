@@ -18,15 +18,15 @@ const InvestidorStats = ({ investidores, aportes }: InvestidorStatsProps) => {
     return {
       nome: investidor.nome.split(' ')[0], // Apenas o primeiro nome
       aportes: totalAportes,
-      saldo: investidor.saldoAtual,
-      rendimento: investidor.saldoAtual - totalAportes
+      saldo: investidor.saldo_atual,
+      rendimento: investidor.saldo_atual - totalAportes
     };
   });
 
   // Dados para gráfico de pizza (distribuição de saldos)
   const saldosData = investidores.map(investidor => ({
     name: investidor.nome.split(' ')[0],
-    value: investidor.saldoAtual,
+    value: investidor.saldo_atual,
     color: `hsl(${Math.random() * 360}, 70%, 50%)`
   }));
 

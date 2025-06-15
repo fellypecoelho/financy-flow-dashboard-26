@@ -23,7 +23,7 @@ const InvestidorModal = ({ investidor, onSave, onClose }: InvestidorModalProps) 
         nome: investidor.nome,
         email: investidor.email,
         ativo: investidor.ativo,
-        saldoAtual: investidor.saldoAtual.toString()
+        saldoAtual: investidor.saldo_atual.toString()
       });
     }
   }, [investidor]);
@@ -36,7 +36,7 @@ const InvestidorModal = ({ investidor, onSave, onClose }: InvestidorModalProps) 
       nome: formData.nome,
       email: formData.email,
       ativo: formData.ativo,
-      saldoAtual: parseFloat(formData.saldoAtual) || 0
+      saldo_atual: parseFloat(formData.saldoAtual) || 0
     };
 
     onSave(investidorData);

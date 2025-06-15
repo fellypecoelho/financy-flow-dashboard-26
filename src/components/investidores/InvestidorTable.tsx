@@ -59,7 +59,7 @@ const InvestidorTable = ({ investidores, aportes, onEdit, onDelete }: Investidor
         {investidores.map((investidor) => {
           const totalAportes = calcularTotalAportes(investidor.id);
           const qtdAportes = contarAportes(investidor.id);
-          const rendimento = investidor.saldoAtual - totalAportes;
+          const rendimento = investidor.saldo_atual - totalAportes;
           const percentualRendimento = totalAportes > 0 ? (rendimento / totalAportes) * 100 : 0;
 
           return (
@@ -89,7 +89,7 @@ const InvestidorTable = ({ investidores, aportes, onEdit, onDelete }: Investidor
                 {formatValor(totalAportes)}
               </TableCell>
               <TableCell className="text-right font-semibold">
-                {formatValor(investidor.saldoAtual)}
+                {formatValor(investidor.saldo_atual)}
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end">

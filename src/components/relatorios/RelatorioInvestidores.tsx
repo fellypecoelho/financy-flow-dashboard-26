@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -44,7 +45,7 @@ const RelatorioInvestidores = ({ periodo, despesas, aportes, investidores }: Rel
       aportes: aportesInvestidor,
       despesas: despesasInvestidor,
       saldo: aportesInvestidor - despesasInvestidor,
-      saldoAtual: investidor.saldoAtual
+      saldoAtual: investidor.saldo_atual
     };
   });
 

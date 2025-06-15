@@ -43,12 +43,6 @@ export const useFinancialData = () => {
     despesas: mockDespesas,
     aportes: mockAportes,
     dashboardData,
-    isLoading,
-    // Funções vazias para compatibilidade (serão removidas gradualmente)
-    setDespesas: () => {},
-    setAportes: () => {},
-    setCartoes: () => {},
-    setInvestidores: () => {},
-    setCategorias: () => {}
+    isLoading
   };
 };
