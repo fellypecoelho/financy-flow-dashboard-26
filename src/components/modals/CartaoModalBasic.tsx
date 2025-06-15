@@ -14,10 +14,10 @@ interface CartaoModalBasicProps {
 const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: CartaoModalBasicProps) => {
   const [formData, setFormData] = useState({
     nome: '',
-    numero: '',
-    bandeira: 'Visa' as const,
+    bandeira: 'Visa' as 'Visa' | 'Mastercard' | 'American Express' | 'Elo',
     limite: '',
-    dataVencimento: '',
+    diaFechamento: '1',
+    diaVencimento: '1',
     investidorId: ''
   });
 
@@ -25,19 +25,19 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
     if (cartao) {
       setFormData({
         nome: cartao.nome,
-        numero: cartao.numero,
         bandeira: cartao.bandeira,
         limite: cartao.limite.toString(),
-        dataVencimento: cartao.dataVencimento,
+        diaFechamento: cartao.diaFechamento.toString(),
+        diaVencimento: cartao.diaVencimento.toString(),
         investidorId: cartao.investidorId
       });
     } else {
       setFormData({
         nome: '',
-        numero: '',
         bandeira: 'Visa',
         limite: '',
-        dataVencimento: '',
+        diaFechamento: '1',
+        diaVencimento: '1',
         investidorId: ''
       });
     }
@@ -48,10 +48,10 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
     
     const cartaoData = {
       nome: formData.nome,
-      numero: formData.numero,
       bandeira: formData.bandeira,
       limite: parseFloat(formData.limite),
-      dataVencimento: formData.dataVencimento,
+      diaFechamento: parseInt(formData.diaFechamento),
+      diaVencimento: parseInt(formData.diaVencimento),
       investidorId: formData.investidorId
     };
 
@@ -87,18 +87,6 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Número do Cartão</label>
-            <input
-              type="text"
-              required
-              value={formData.numero}
-              onChange={(e) => setFormData({...formData, numero: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="**** **** **** 1234"
-            />
-          </div>
-
-          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Bandeira</label>
             <select
               value={formData.bandeira}
@@ -126,15 +114,34 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data de Vencimento</label>
-            <input
-              type="date"
-              required
-              value={formData.dataVencimento}
-              onChange={(e) => setFormData({...formData, dataVencimento: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dia Fechamento</label>
+              <select
+                value={formData.diaFechamento}
+                onChange={(e) => setFormData({...formData, diaFechamento: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                  <option key={day} value={day.toString()}>Dia {day}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dia Vencimento</label>
+              <select
+                value={formData.diaVencimento}
+                onChange={(e) => setFormData({...formData, diaVencimento: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                  <option key={day} value={day.toString()}>Dia {day}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div>
