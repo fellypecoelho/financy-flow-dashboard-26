@@ -2,7 +2,8 @@
 import React, { memo } from 'react';
 import { CreditCard } from 'lucide-react';
 import { CartaoVisualProps } from '@/types/cartao';
-import { getBandeiraGradient, formatLimit } from '@/utils/cartaoUtils';
+import { BANDEIRA_CSS_GRADIENTS, USAGE_THRESHOLDS, USAGE_CLASSES, DEFAULT_COLORS } from '@/constants/cartaoConstants';
+import { formatLimit } from '@/utils/cartaoUtils';
 
 const CartaoVisual: React.FC<CartaoVisualProps> = memo(({ cartao, limiteUtilizado, percentualUtilizado }) => {
   const limiteDisponivel = cartao.limite - limiteUtilizado;
@@ -11,9 +12,22 @@ const CartaoVisual: React.FC<CartaoVisualProps> = memo(({ cartao, limiteUtilizad
   const formatCardNumber = () => {
     return "**** **** **** 1234";
   };
+
+  // Função para obter gradiente baseado na bandeira
+  const getGradientClass = (bandeira: string) => {
+    return BANDEIRA_CSS_GRADIENTS[bandeira as keyof typeof BANDEIRA_CSS_GRADIENTS] || DEFAULT_COLORS.GRADIENT;
+  };
+
+  // Função para obter classe de cor baseada no percentual de uso
+  const getUsageColorClass = (percentual: number) => {
+    if (percentual >= USAGE_THRESHOLDS.CRITICAL) return USAGE_CLASSES.CRITICAL;
+    if (percentual >= USAGE_THRESHOLDS.HIGH) return USAGE_CLASSES.HIGH;
+    if (percentual >= USAGE_THRESHOLDS.MEDIUM) return USAGE_CLASSES.MEDIUM;
+    return USAGE_CLASSES.LOW;
+  };
   
   return (
-    <div className={`bg-gradient-to-br ${getBandeiraGradient(cartao.bandeira)} p-6 text-white relative overflow-hidden`}>
+    <div className={`${getGradientClass(cartao.bandeira)} p-6 text-white relative overflow-hidden`}>
       {/* Pattern de fundo sutil */}
       <div className="absolute inset-0 bg-black/10"></div>
       
@@ -55,10 +69,7 @@ const CartaoVisual: React.FC<CartaoVisualProps> = memo(({ cartao, limiteUtilizad
             </div>
             <div className="w-full bg-white/20 rounded-full h-2">
               <div 
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  percentualUtilizado > 80 ? 'bg-red-400' :
-                  percentualUtilizado > 60 ? 'bg-yellow-400' : 'bg-white'
-                }`}
+                className={`h-2 rounded-full transition-all duration-300 ${getUsageColorClass(percentualUtilizado)}`}
                 style={{ width: `${Math.min(percentualUtilizado, 100)}%` }}
               ></div>
             </div>
