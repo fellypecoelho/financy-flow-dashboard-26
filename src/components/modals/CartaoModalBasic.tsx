@@ -11,10 +11,12 @@ interface CartaoModalBasicProps {
   investidores: Investidor[];
 }
 
+type BandeiraType = 'Visa' | 'Mastercard' | 'American Express' | 'Elo';
+
 const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: CartaoModalBasicProps) => {
   const [formData, setFormData] = useState({
     nome: '',
-    bandeira: 'Visa' as 'Visa' | 'Mastercard' | 'American Express' | 'Elo',
+    bandeira: 'Visa' as BandeiraType,
     limite: '',
     diaFechamento: '1',
     diaVencimento: '1',
@@ -25,7 +27,7 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
     if (cartao) {
       setFormData({
         nome: cartao.nome,
-        bandeira: cartao.bandeira,
+        bandeira: cartao.bandeira as BandeiraType,
         limite: cartao.limite.toString(),
         diaFechamento: cartao.diaFechamento.toString(),
         diaVencimento: cartao.diaVencimento.toString(),
@@ -34,7 +36,7 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
     } else {
       setFormData({
         nome: '',
-        bandeira: 'Visa',
+        bandeira: 'Visa' as BandeiraType,
         limite: '',
         diaFechamento: '1',
         diaVencimento: '1',
@@ -57,6 +59,10 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
 
     onSave(cartaoData);
     onClose();
+  };
+
+  const handleBandeiraChange = (value: string) => {
+    setFormData({...formData, bandeira: value as BandeiraType});
   };
 
   if (!isOpen) return null;
@@ -90,7 +96,7 @@ const CartaoModalBasic = ({ isOpen, onClose, onSave, cartao, investidores }: Car
             <label className="block text-sm font-medium text-gray-700 mb-1">Bandeira</label>
             <select
               value={formData.bandeira}
-              onChange={(e) => setFormData({...formData, bandeira: e.target.value as any})}
+              onChange={(e) => handleBandeiraChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="Visa">Visa</option>
