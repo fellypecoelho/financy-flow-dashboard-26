@@ -1,16 +1,12 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
   Receipt, 
-  TrendingUp, 
-  Users, 
-  CreditCard, 
-  Calendar,
+  Target,
   BarChart3,
   Settings,
   LogOut,
-  UserCog
+  Users
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfiles } from '@/hooks/useProfiles';
@@ -24,24 +20,17 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, currentPage, onPageChange }: LayoutProps) => {
-  const { signOut, user } = useAuth();
-  const { isAdmin, currentProfile } = useProfiles();
+  const { signOut, user, isAdmin } = useAuth();
+  const { currentProfile } = useProfiles();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'despesas', label: 'Despesas', icon: Receipt },
-    { id: 'aportes', label: 'Aportes', icon: TrendingUp },
-    { id: 'investidores', label: 'Investidores', icon: Users },
-    { id: 'cartoes', label: 'Cartões', icon: CreditCard },
-    { id: 'calendario', label: 'Calendário', icon: Calendar },
+    { id: 'lancamentos', label: 'Lançamentos', icon: Receipt },
+    { id: 'metas', label: 'Metas', icon: Target },
     { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
+    ...(isAdmin ? [{ id: 'usuarios', label: 'Usuários', icon: Users }] : []),
     { id: 'configuracoes', label: 'Configurações', icon: Settings },
   ];
-
-  // Adicionar gestão de usuários apenas para admin
-  if (isAdmin) {
-    menuItems.splice(-1, 0, { id: 'usuarios', label: 'Usuários', icon: UserCog });
-  }
 
   return (
     <>
@@ -51,7 +40,7 @@ const Layout = ({ children, currentPage, onPageChange }: LayoutProps) => {
         <div className="w-64 bg-card border-r border-border flex flex-col">
           <div className="p-6 border-b border-border">
             <h1 className="text-2xl font-bold text-foreground">
-              Finanças
+              Finanças Pessoais
             </h1>
             {user && currentProfile && (
               <div className="mt-2">
@@ -59,7 +48,7 @@ const Layout = ({ children, currentPage, onPageChange }: LayoutProps) => {
                   {currentProfile.nome}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {currentProfile.tipo_usuario === 'admin' ? 'Administrador' : 'Investidor'}
+                  {isAdmin ? 'Administrador' : 'Investidor'}
                 </p>
               </div>
             )}

@@ -1,73 +1,68 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../integrations/supabase/client';
+import { Categoria } from '../types';
+import { useAuth } from './useAuth';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+export function useCategorias() {
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { isAdmin } = useAuth();
 
-interface Categoria {
-  id: string;
-  nome: string;
-  cor: string;
-  icone: string;
-  created_at?: string;
-  updated_at?: string;
-}
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
 
-export const useCategorias = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const {
-    data: categorias = [],
-    isLoading,
-    error
-  } = useQuery({
-    queryKey: ['categorias'],
-    queryFn: async () => {
+  const fetchCategorias = async () => {
+    try {
       const { data, error } = await supabase
         .from('categorias')
         .select('*')
         .order('nome');
 
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user
-  });
+      if (error) {
+        console.error('Erro ao buscar categorias:', error);
+        return;
+      }
 
-  const createCategoria = useMutation({
-    mutationFn: async (categoria: Omit<Categoria, 'id' | 'created_at' | 'updated_at'>) => {
+      setCategorias(data || []);
+    } catch (error) {
+      console.error('Erro ao buscar categorias:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addCategoria = async (categoria: Omit<Categoria, 'id' | 'created_at' | 'updated_at'>) => {
+    if (!isAdmin) {
+      throw new Error('Apenas administradores podem adicionar categorias');
+    }
+
+    try {
       const { data, error } = await supabase
         .from('categorias')
-        .insert([{
-          ...categoria,
-          user_id: user?.id
-        }])
+        .insert([categoria])
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] });
-      toast({
-        title: "Sucesso!",
-        description: "Categoria criada com sucesso."
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erro",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  });
+      if (error) {
+        console.error('Erro ao adicionar categoria:', error);
+        throw error;
+      }
 
-  const updateCategoria = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Categoria> & { id: string }) => {
+      setCategorias(prev => [...prev, data]);
+      return data;
+    } catch (error) {
+      console.error('Erro ao adicionar categoria:', error);
+      throw error;
+    }
+  };
+
+  const updateCategoria = async (id: string, updates: Partial<Categoria>) => {
+    if (!isAdmin) {
+      throw new Error('Apenas administradores podem editar categorias');
+    }
+
+    try {
       const { data, error } = await supabase
         .from('categorias')
         .update(updates)
@@ -75,59 +70,55 @@ export const useCategorias = () => {
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] });
-      toast({
-        title: "Sucesso!",
-        description: "Categoria atualizada com sucesso."
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erro",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  });
+      if (error) {
+        console.error('Erro ao atualizar categoria:', error);
+        throw error;
+      }
 
-  const deleteCategoria = useMutation({
-    mutationFn: async (id: string) => {
+      setCategorias(prev => 
+        prev.map(c => c.id === id ? data : c)
+      );
+      return data;
+    } catch (error) {
+      console.error('Erro ao atualizar categoria:', error);
+      throw error;
+    }
+  };
+
+  const deleteCategoria = async (id: string) => {
+    if (!isAdmin) {
+      throw new Error('Apenas administradores podem excluir categorias');
+    }
+
+    try {
       const { error } = await supabase
         .from('categorias')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] });
-      toast({
-        title: "Sucesso!",
-        description: "Categoria removida com sucesso."
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erro",
-        description: error.message,
-        variant: "destructive"
-      });
+      if (error) {
+        console.error('Erro ao deletar categoria:', error);
+        throw error;
+      }
+
+      setCategorias(prev => prev.filter(c => c.id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar categoria:', error);
+      throw error;
     }
-  });
+  };
+
+  const getCategoriasByTipo = (tipo: 'receita' | 'despesa') => {
+    return categorias.filter(c => c.tipo === tipo);
+  };
 
   return {
     categorias,
-    isLoading,
-    error,
-    createCategoria: createCategoria.mutate,
-    updateCategoria: updateCategoria.mutate,
-    deleteCategoria: deleteCategoria.mutate,
-    isCreating: createCategoria.isPending,
-    isUpdating: updateCategoria.isPending,
-    isDeleting: deleteCategoria.isPending
+    loading,
+    addCategoria,
+    updateCategoria,
+    deleteCategoria,
+    getCategoriasByTipo,
+    refreshCategorias: fetchCategorias,
   };
-};
+}

@@ -1,21 +1,31 @@
-
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const FinancialChart = () => {
-  const data = [
-    { month: 'Jul', receitas: 7500, despesas: 5200, saldo: 2300 },
-    { month: 'Ago', receitas: 8000, despesas: 5800, saldo: 2200 },
-    { month: 'Set', receitas: 7800, despesas: 6100, saldo: 1700 },
-    { month: 'Out', receitas: 8200, despesas: 5900, saldo: 2300 },
-    { month: 'Nov', receitas: 8100, despesas: 6400, saldo: 1700 },
-    { month: 'Dez', receitas: 8500, despesas: 6200, saldo: 2300 },
-  ];
+interface FinancialChartProps {
+  data: { mes: string; receitas: number; despesas: number; saldo: number }[];
+}
+
+const FinancialChart: React.FC<FinancialChartProps> = ({ data }) => {
+  if (data.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Evolução Mensal</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">
+            <p>Nenhum dado disponível</p>
+            <p className="text-sm">Adicione lançamentos para ver a evolução</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="border">
-      <CardHeader className="border-b">
+    <Card>
+      <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-foreground">Evolução Mensal</CardTitle>
           <div className="flex items-center space-x-4 text-sm">
@@ -35,13 +45,13 @@ const FinancialChart = () => {
         </div>
       </CardHeader>
       
-      <CardContent className="p-6">
+      <CardContent>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
-                dataKey="month" 
+                dataKey="mes" 
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
               />
